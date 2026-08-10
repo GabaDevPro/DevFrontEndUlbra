@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO-DO list</title>
+</head>
+<body>
+    <header>
+        <h1>Quadro de Tarefas</h1>
+        <p>Projetos Acadêmicos</p>
+        <br>
+        <hr>
+        <search>
+            <form action="">
+                <fieldset>
+                    <legend>Busca e filtros</legend>
+
+                    <label for="busca">Buscar</label>
+                    <input type="text" name="busca" id="busca">
+
+                    <label for="stts">Filtro por status</label>
+                    <select name="" id="stts">
+                        <option value=""></option>
+                        <option value="fazer">A fazer</option>
+                        <option value="andamento">Em andamento</option>
+                        <option value="revisao">Em revisão</option>
+                        <option value="concluida">Concluída</option>
+                    </select>
+
+                    <label for="prop">Filtro por prioridade</label>
+                    <select name="" id="prop">
+                        <option value=""></option>
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+
+                    <button type="submit">Buscar</button>
+                </fieldset>
+            </form>
+        </search>
+        <hr>
+    </header>
+
+    <main>
+
+        <section class="afazer" aria-labelledby="col-fazer">
+            <h2 id="col-fazer">A fazer</h2>
+            <ul>
+                <li><article>
+                    <h3>Atividade da Marianne</h3>
+                    <dl>
+                        <dt>Projeto</dt>
+                        <dd>Página .html</dd>
+
+                        <dt>Responsável</dt>
+                        <dd>Marianne Dutra</dd>
+
+                        <dt>Prazo</dt>
+                        <dd>14/08/2026</dd>
+
+                        <dt>Prioridade</dt>
+                        <dd>Média</dd>
+                    </dl>
+
+                </article></li>
+
+                <li><article>
+                    <h3>Modelar banco de dados</h3>
+                    <dl>
+                        <dt>Projeto</dt>
+                        <dd>Sistema de Biblioteca</dd>
+
+                        <dt>Responsável</dt>
+                        <dd>Marianne Dutra</dd>
+
+                        <dt>Prazo</dt>
+                        <dd><time datetime="2026-08-20">20/08/2026</time></dd>
+
+                        <dt>Prioridade</dt>
+                        <dd>Alta</dd>
+                    </dl>
+                </article></li>
+            </ul>
+        </section>
+
+        <section class="emandamento" aria-labelledby="col-andamento">
+            <h2 id="col-andamento">Em andamento</h2>
+            <ul>
+                <li>
+                    <article>
+                        <h3>Estruturar formulário de cadastro</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Página .html</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Gabriel Ferreira</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-18">18/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Alta</dd>
+                        </dl>
+                    </article>
+                </li>
+
+                <li>
+                    <article>
+                        <h3>Escrever consultas SQL de empréstimo</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Sistema de Biblioteca</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Lucas Andrade</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-25">25/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Média</dd>
+                        </dl>
+                    </article>
+                </li>
+
+                <li>
+                    <article>
+                        <h3>Levantar requisitos com o cliente</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Sistema de Biblioteca</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Marianne Dutra</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-21">21/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Baixa</dd>
+                        </dl>
+                    </article>
+                </li>
+            </ul>
+
+        </section>
+
+        <section class="emrevisao" aria-labelledby="col-revisao">
+            <h2 id="col-revisao">Em revisão</h2>
+            <ul>
+                <li>
+                    <article>
+                        <h3>Revisar semântica do HTML</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Página .html</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Lucas Andrade</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-12">12/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Alta</dd>
+                        </dl>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
+        <section class="concluidas" aria-labelledby="col-concluida">
+            <h2 id="col-concluida">Concluídas</h2>
+            <ul>
+                <li>
+                    <article>
+                        <h3>Definir escopo do projeto</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Sistema de Biblioteca</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Marianne Dutra</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-07-28">28/07/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Alta</dd>
+                        </dl>
+                    </article>
+                </li>
+
+                <li>
+                    <article>
+                        <h3>Criar repositório no GitHub</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Página .html</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Lucas Andrade</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-01">01/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Baixa</dd>
+                        </dl>
+                    </article>
+                </li>
+
+                <li>
+                    <article>
+                        <h3>Desenhar wireframe do quadro</h3>
+                        <dl>
+                            <dt>Projeto</dt>
+                            <dd>Página .html</dd>
+
+                            <dt>Responsável</dt>
+                            <dd>Marianne Dutra</dd>
+
+                            <dt>Prazo</dt>
+                            <dd><time datetime="2026-08-05">05/08/2026</time></dd>
+
+                            <dt>Prioridade</dt>
+                            <dd>Média</dd>
+                        </dl>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>
