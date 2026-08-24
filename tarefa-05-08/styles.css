@@ -1,0 +1,432 @@
+/* ==========================================================================
+   Reset e caixa de dimensionamento
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1, h2, h3,
+p, dl, dd,
+ul {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--color-border);
+  margin-block: var(--space-3);
+}
+
+/* ==========================================================================
+   Sistema de design — propriedades personalizadas
+   ========================================================================== */
+
+:root {
+  /* Papel: superfície, texto e borda */
+  --color-bg: #f6efe0;
+  --color-surface: #fffdf7;
+  --color-surface-alt: #fff8e8;
+  --color-text: #2a2f3a;
+  --color-text-muted: #4b5563;
+  --color-border: #d9cdb0;
+
+  /* Linhas de caderno quadriculado / pauta */
+  --paper-grid-line: #c6d9ef;
+  --paper-margin-line: #e08a93;
+
+  /* Uma cor por status, como canetas diferentes */
+  --color-status-fazer: #1e40af;
+  --color-status-andamento: #78350f;
+  --color-status-revisao: #6b21a8;
+  --color-status-concluida: #166534;
+
+  /* Cor por prioridade, como se corrigida a caneta */
+  --pen-alta: #b91c1c;
+  --pen-media: #92400e;
+  --pen-baixa: #15803d;
+
+  /* Escala de espaçamento */
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+
+  /* Raios de canto */
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+
+  /* Tipografia */
+  --font-hand: "Kalam", "Comic Sans MS", cursive;
+  --font-note: "Patrick Hand", var(--font-hand), sans-serif;
+}
+
+/* ==========================================================================
+   Base — papel quadriculado por trás de tudo
+   ========================================================================== */
+
+body {
+  font-family: var(--font-note);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  background-image:
+    linear-gradient(var(--paper-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-grid-line) 1px, transparent 1px);
+  background-size: 1.5rem 1.5rem;
+}
+
+h1 {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem);
+  line-height: 1.15;
+  transform: rotate(-1deg);
+}
+
+h2 {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.375rem);
+}
+
+/* ==========================================================================
+   Cabeçalho — folha de rosto do caderno
+   ========================================================================== */
+
+header {
+  position: relative;
+  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  padding-left: clamp(3rem, 2rem + 4vw, 5rem);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* furos de espiral, no topo da folha */
+header::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0.9rem;
+  background-image: repeating-radial-gradient(
+    circle,
+    var(--color-bg) 0 0.2rem,
+    var(--color-surface) 0.22rem 0.95rem
+  );
+  background-size: 1.6rem 1.6rem;
+  background-position: 0.8rem center;
+}
+
+/* linha vermelha de margem, como numa folha de caderno */
+header::before {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0;
+  left: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);
+  width: 2px;
+  background: var(--paper-margin-line);
+  opacity: 0.6;
+}
+
+header p {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+fieldset {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  background: var(--color-surface-alt);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2) var(--space-3);
+}
+
+legend {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  padding: 0.15rem var(--space-2);
+  background: var(--color-status-fazer);
+  color: #ffffff;
+  border-radius: var(--radius);
+  transform: rotate(-1.5deg);
+}
+
+fieldset label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  align-self: center;
+}
+
+fieldset input,
+fieldset select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-note);
+  font-size: 1rem;
+}
+
+fieldset button {
+  min-height: 2.75rem;
+  min-width: 6rem;
+  padding: var(--space-1) var(--space-3);
+  border: 2px solid var(--color-status-fazer);
+  border-radius: var(--radius);
+  background: var(--color-status-fazer);
+  color: #ffffff;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  cursor: pointer;
+  justify-self: start;
+}
+
+/* ==========================================================================
+   Quadro (Grid) e colunas (Flexbox)
+   ========================================================================== */
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+}
+
+main section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+}
+
+.afazer      { --status-color: var(--color-status-fazer); }
+.emandamento { --status-color: var(--color-status-andamento); }
+.emrevisao   { --status-color: var(--color-status-revisao); }
+.concluidas  { --status-color: var(--color-status-concluida); }
+
+/* fita adesiva prendendo a coluna, como num mural */
+main section::before {
+  content: "";
+  position: absolute;
+  top: -0.6rem;
+  left: var(--space-3);
+  width: 3.5rem;
+  height: 1.15rem;
+  background: var(--status-color);
+  opacity: 0.85;
+  transform: rotate(-3deg);
+  border-radius: 2px;
+}
+
+main section h2 {
+  color: var(--status-color);
+  transform: rotate(-0.5deg);
+}
+
+main section ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+main section li {
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Cartão de tarefa — folha de caderno arrancada
+   ========================================================================== */
+
+article {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  height: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  box-shadow: 0 2px 6px rgba(42, 47, 58, 0.12);
+  transform: rotate(var(--tilt, -0.5deg));
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+main section li:nth-child(even) article {
+  --tilt: 0.5deg;
+}
+
+article:hover,
+article:focus-within {
+  transform: rotate(0deg);
+  box-shadow: 0 6px 14px rgba(42, 47, 58, 0.18);
+}
+
+/* folha "de baixo" da pilha, para dar volume de papel */
+article::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transform: rotate(-1.4deg);
+}
+
+/* clipe de papel decorativo no canto do cartão */
+article::before {
+  content: "\1F4CE";
+  position: absolute;
+  top: -0.6rem;
+  right: 0.6rem;
+  font-size: 1.15rem;
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+
+article h3 {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  min-width: 0;
+  font-size: 1.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-image: linear-gradient(to bottom, transparent 72%, #fde68a99 72%);
+}
+
+article dl {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--space-1);
+}
+
+article dt {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+article dd {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+/* prazo com um alfinete, marcando a página */
+article dt:nth-of-type(3)::before {
+  content: "\1F4CC ";
+}
+
+/* prioridade logo abaixo do título, como um selo circulado à caneta */
+article dt:nth-of-type(4),
+article dd:nth-of-type(4) {
+  order: -1;
+}
+
+article dt:nth-of-type(4) {
+  font-size: 0.75rem;
+}
+
+article dd:nth-of-type(4) {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.1rem var(--space-2);
+  border: 2px solid currentColor;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  font-family: var(--font-hand);
+  font-weight: 700;
+}
+
+.prioridade-alta  { color: var(--pen-alta); }
+.prioridade-media { color: var(--pen-media); }
+.prioridade-baixa { color: var(--pen-baixa); }
+
+/* prazo fixado na base do cartão */
+article dt:nth-of-type(3) {
+  margin-top: auto;
+}
+
+/* ==========================================================================
+   Rodapé
+   ========================================================================== */
+
+footer {
+  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  color: var(--color-text-muted);
+}
+
+footer h2 {
+  font-size: 1.05rem;
+}
+
+/* ==========================================================================
+   Acessibilidade — foco visível
+   ========================================================================== */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-status-fazer);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Breakpoints (mobile-first, min-width)
+   ========================================================================== */
+
+/* 30rem (480px): a busca já tem largura suficiente para colocar cada rótulo
+   ao lado do seu campo, em vez de empilhado, sem espremer os campos */
+@media (min-width: 30rem) {
+  fieldset {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+
+  fieldset button {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 40rem (640px): há espaço para duas colunas de status lado a lado sem que
+   os cartões fiquem estreitos demais e o texto passe a quebrar mal */
+@media (min-width: 40rem) {
+  main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 64rem (1024px): a tela é larga o bastante para as quatro colunas de
+   status lado a lado sem apertar o conteúdo dos cartões */
+@media (min-width: 64rem) {
+  main {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
