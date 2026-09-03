@@ -16,16 +16,16 @@
         <br>
         <hr>
         <search>
-            <form action="">
+            <form id="form-busca" action="">
                 <fieldset>
                     <legend>Busca e filtros</legend>
 
                     <label for="busca">Buscar</label>
-                    <input type="text" name="busca" id="busca">
+                    <input type="text" name="busca" id="busca" placeholder="Título, projeto ou responsável" autocomplete="off">
 
                     <label for="stts">Filtro por status</label>
                     <select name="status" id="stts">
-                        <option value=""></option>
+                        <option value="">Todos</option>
                         <option value="fazer">A fazer</option>
                         <option value="andamento">Em andamento</option>
                         <option value="revisao">Em revisão</option>
@@ -34,208 +34,49 @@
 
                     <label for="prop">Filtro por prioridade</label>
                     <select name="prop" id="prop">
-                        <option value=""></option>
+                        <option value="">Todas</option>
                         <option value="baixa">Baixa</option>
                         <option value="media">Média</option>
                         <option value="alta">Alta</option>
                     </select>
 
-                    <button type="submit">Buscar</button>
+                    <button type="button">Buscar</button>
                 </fieldset>
             </form>
         </search>
+
         <hr>
     </header>
 
+    <!-- Região viva: existe desde o carregamento do documento e começa VAZIA.
+         Precisa estar no HTML antes de qualquer mudança, porque o leitor de
+         tela só anuncia alterações de elementos que ele já estava observando.
+         Um elemento criado junto com a mensagem não anuncia nada. -->
+    <p id="regiao-status" class="regiao-status" role="status" aria-live="polite"></p>
+
+    <!-- Painel dos estados de carregando, vazio e erro. -->
+    <div id="painel-estado" class="painel-estado" hidden></div>
+
     <main>
 
-        <section class="afazer" aria-labelledby="col-fazer">
-            <h2 id="col-fazer">A fazer</h2>
-            <ul>
-                <li><article>
-                    <h3>Atividade da Marianne</h3>
-                    <dl>
-                        <dt>Projeto</dt>
-                        <dd>Página .html</dd>
-
-                        <dt>Responsável</dt>
-                        <dd>Marianne Dutra</dd>
-
-                        <dt>Prazo</dt>
-                        <dd>14/08/2026</dd>
-
-                        <dt>Prioridade</dt>
-                        <dd class="prioridade-media">Média</dd>
-                    </dl>
-
-                </article></li>
-
-                <li><article>
-                    <h3>Modelar banco de dados</h3>
-                    <dl>
-                        <dt>Projeto</dt>
-                        <dd>Sistema de Biblioteca</dd>
-
-                        <dt>Responsável</dt>
-                        <dd>Marianne Dutra</dd>
-
-                        <dt>Prazo</dt>
-                        <dd><time datetime="2026-08-20">20/08/2026</time></dd>
-
-                        <dt>Prioridade</dt>
-                        <dd class="prioridade-alta">Alta</dd>
-                    </dl>
-                </article></li>
-            </ul>
+        <section class="afazer" aria-labelledby="col-fazer" data-status="fazer">
+            <h2 id="col-fazer">A fazer <span class="contador"></span></h2>
+            <ul></ul>
         </section>
 
-        <section class="emandamento" aria-labelledby="col-andamento">
-            <h2 id="col-andamento">Em andamento</h2>
-            <ul>
-                <li>
-                    <article>
-                        <h3>Estruturar formulário de cadastro</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Página .html</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Gabriel Ferreira</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-18">18/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-alta">Alta</dd>
-                        </dl>
-                    </article>
-                </li>
-
-                <li>
-                    <article>
-                        <h3>Escrever consultas SQL de empréstimo</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Sistema de Biblioteca</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Lucas Andrade</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-25">25/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-media">Média</dd>
-                        </dl>
-                    </article>
-                </li>
-
-                <li>
-                    <article>
-                        <h3>Levantar requisitos com o cliente</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Sistema de Biblioteca</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Marianne Dutra</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-21">21/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-baixa">Baixa</dd>
-                        </dl>
-                    </article>
-                </li>
-            </ul>
-
+        <section class="emandamento" aria-labelledby="col-andamento" data-status="andamento">
+            <h2 id="col-andamento">Em andamento <span class="contador"></span></h2>
+            <ul></ul>
         </section>
 
-        <section class="emrevisao" aria-labelledby="col-revisao">
-            <h2 id="col-revisao">Em revisão</h2>
-            <ul>
-                <li>
-                    <article>
-                        <h3>Revisar semântica do HTML</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Página .html</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Lucas Andrade</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-12">12/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-alta">Alta</dd>
-                        </dl>
-                    </article>
-                </li>
-            </ul>
+        <section class="emrevisao" aria-labelledby="col-revisao" data-status="revisao">
+            <h2 id="col-revisao">Em revisão <span class="contador"></span></h2>
+            <ul></ul>
         </section>
 
-        <section class="concluidas" aria-labelledby="col-concluida">
-            <h2 id="col-concluida">Concluídas</h2>
-            <ul>
-                <li>
-                    <article>
-                        <h3>Definir escopo do projeto</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Sistema de Biblioteca</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Marianne Dutra</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-07-28">28/07/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-alta">Alta</dd>
-                        </dl>
-                    </article>
-                </li>
-
-                <li>
-                    <article>
-                        <h3>Criar repositório no GitHub</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Página .html</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Lucas Andrade</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-01">01/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-baixa">Baixa</dd>
-                        </dl>
-                    </article>
-                </li>
-
-                <li>
-                    <article>
-                        <h3>Desenhar wireframe do quadro</h3>
-                        <dl>
-                            <dt>Projeto</dt>
-                            <dd>Página .html</dd>
-
-                            <dt>Responsável</dt>
-                            <dd>Marianne Dutra</dd>
-
-                            <dt>Prazo</dt>
-                            <dd><time datetime="2026-08-05">05/08/2026</time></dd>
-
-                            <dt>Prioridade</dt>
-                            <dd class="prioridade-media">Média</dd>
-                        </dl>
-                    </article>
-                </li>
-            </ul>
+        <section class="concluidas" aria-labelledby="col-concluida" data-status="concluida">
+            <h2 id="col-concluida">Concluídas <span class="contador"></span></h2>
+            <ul></ul>
         </section>
 
     </main>
@@ -245,5 +86,6 @@
         <p>Desenvolvimento Front-End</p>
     </footer>
     <br>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

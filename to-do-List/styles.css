@@ -430,3 +430,104 @@ select:focus-visible {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+/* ==========================================================================
+   Contador de tarefas por coluna
+   ========================================================================== */
+
+.contador {
+  font-family: var(--font-note);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+/* ==========================================================================
+   Movimento reduzido
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  article {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   E3 — região viva e os quatro estados da tela
+   ========================================================================== */
+
+/* Região anunciada a leitores de tela. Fica visível também para quem enxerga:
+   é onde aparece a contagem de tarefas no estado de sucesso. */
+.regiao-status {
+  padding: 0 clamp(1rem, 0.5rem + 3vw, 3rem);
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  min-height: 1.5rem;
+}
+
+/* Painel de carregando, vazio e erro. */
+.painel-estado {
+  margin: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  padding: var(--space-4);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.painel-estado h2 {
+  margin-bottom: var(--space-2);
+  transform: rotate(-0.5deg);
+}
+
+.painel-estado p {
+  max-width: 44ch;
+  margin-inline: auto;
+  color: var(--color-text-muted);
+}
+
+/* Cada estado com sua cor, para que as telas sejam mesmo distintas. */
+.painel-carregando h2 { color: var(--color-status-fazer); }
+.painel-vazio      h2 { color: var(--color-status-andamento); }
+.painel-erro       h2 { color: var(--pen-alta); }
+
+.painel-erro {
+  border-color: var(--pen-alta);
+  border-style: solid;
+}
+
+/* Lápis girando enquanto carrega. */
+.painel-carregando h2::after {
+  content: " \270E";
+  display: inline-block;
+  animation: girando 1.2s linear infinite;
+}
+
+@keyframes girando {
+  to { transform: rotate(360deg); }
+}
+
+/* `hidden` sozinho não vence o `display: grid` de main; esta regra garante
+   que o quadro realmente suma nos estados que não são de sucesso. */
+main[hidden],
+.painel-estado[hidden] {
+  display: none;
+}
+
+/* Coluna sem nenhum cartão — em CSS puro, para não misturar essa decoração
+   com a lógica dos quatro estados que vive no JavaScript. */
+main section ul:empty::after {
+  content: "Sem tarefas nesta coluna.";
+  display: block;
+  padding: var(--space-3);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painel-carregando h2::after {
+    animation: none;
+  }
+}
