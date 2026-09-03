@@ -1,0 +1,13 @@
+{
+  "tarefas": [
+    {
+      "id": "t1",
+      "titulo": "Esta tarefa nunca vai aparecer na tela",
+      "projeto": "Página .html",
+      "responsavel": "Gabriel Ferreira",
+      "status": "fazer",
+      "prioridade": "alta",
+      "prazo": "2026-09-08"
+    },
+  ]
+}

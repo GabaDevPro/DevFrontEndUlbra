@@ -1,0 +1,94 @@
+{
+  "tarefas": [
+    {
+      "id": "t1",
+      "titulo": "Atividade da Marianne",
+      "projeto": "Página .html",
+      "responsavel": "Marianne Dutra",
+      "status": "fazer",
+      "prioridade": "media",
+      "prazo": "2026-08-14"
+    },
+    {
+      "id": "t2",
+      "titulo": "Modelar banco de dados",
+      "projeto": "Sistema de Biblioteca",
+      "responsavel": "Marianne Dutra",
+      "status": "fazer",
+      "prioridade": "alta",
+      "prazo": "2026-08-20"
+    },
+    {
+      "id": "t3",
+      "titulo": "Estruturar formulário de cadastro",
+      "projeto": "Página .html",
+      "responsavel": "Gabriel Ferreira",
+      "status": "andamento",
+      "prioridade": "alta",
+      "prazo": "2026-08-18"
+    },
+    {
+      "id": "t4",
+      "titulo": "Escrever consultas SQL de empréstimo",
+      "projeto": "Sistema de Biblioteca",
+      "responsavel": "Lucas Andrade",
+      "status": "andamento",
+      "prioridade": "media",
+      "prazo": "2026-08-25"
+    },
+    {
+      "id": "t5",
+      "titulo": "Levantar requisitos com o cliente",
+      "projeto": "Sistema de Biblioteca",
+      "responsavel": "Marianne Dutra",
+      "status": "andamento",
+      "prioridade": "baixa",
+      "prazo": "2026-08-21"
+    },
+    {
+      "id": "t6",
+      "titulo": "Revisar semântica do HTML",
+      "projeto": "Página .html",
+      "responsavel": "Lucas Andrade",
+      "status": "revisao",
+      "prioridade": "alta",
+      "prazo": "2026-08-12"
+    },
+    {
+      "id": "t7",
+      "titulo": "Conferir contraste das cores",
+      "projeto": "Página .html",
+      "responsavel": "Marianne Dutra",
+      "status": "revisao",
+      "prioridade": "media",
+      "prazo": "2026-09-04"
+    },
+    {
+      "id": "t8",
+      "titulo": "Definir escopo do projeto",
+      "projeto": "Sistema de Biblioteca",
+      "responsavel": "Marianne Dutra",
+      "status": "concluida",
+      "prioridade": "alta",
+      "prazo": "2026-07-28"
+    },
+    {
+      "id": "t9",
+      "titulo": "Criar repositório no GitHub",
+      "projeto": "Página .html",
+      "responsavel": "Lucas Andrade",
+      "status": "concluida",
+      "prioridade": "baixa",
+      "prazo": "2026-08-01"
+    },
+    {
+      "id": "t10",
+      "titulo": "Desenhar wireframe do quadro",
+      "projeto": "Página .html",
+      "responsavel": "Marianne Dutra",
+      "status": "concluida",
+      "prioridade": "media",
+      "prazo": "2026-08-05"
+    }
+  ]
+}
