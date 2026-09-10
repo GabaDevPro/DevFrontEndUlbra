@@ -1,5 +1,5 @@
 /* ==========================================================================
-   renderizacao.js — desenhar tarefas na tela (aula 5)
+   renderizacao.js — desenhar tarefas na tela
    ==========================================================================
 
    Este módulo tem uma responsabilidade só: receber um array de tarefas e
@@ -8,11 +8,18 @@
    O que ele NÃO faz, de propósito:
      - não busca dados (não existe fetch aqui);
      - não decide estados de tela (não sabe o que é "carregando" ou "erro");
+     - não conhece o objeto de estado, nem busca, nem filtros;
      - não guarda o array em lugar nenhum.
 
-   Por isso a E3 trocou a origem dos dados sem alterar este arquivo: para
-   `renderizarTarefas`, tanto faz se o array veio de `dados.js`, de um
-   `fetch` ou de qualquer outro lugar. Ele só precisa de um array.
+   Por isso a E3 trocou a origem dos dados sem alterar este arquivo, e a E4
+   pôde ligar busca e filtros sem reescrevê-lo: `renderizarTarefas` continua
+   recebendo um array e desenhando exatamente o que recebeu.
+
+   O que mudou na E4: a ordenação saiu daqui. Antes, cada coluna reordenava
+   por prazo por conta própria; agora a ordem é decidida uma vez, na
+   derivação, e este módulo a PRESERVA. Se ele continuasse reordenando, o
+   critério escolhido pela pessoa seria descartado no último instante — a tela
+   deixaria de ser uma projeção fiel do estado.
    ========================================================================== */
 
 const PRIORIDADES = {
@@ -26,6 +33,21 @@ export function formatarData(iso) {
   const partes = String(iso).split('-');
   if (partes.length !== 3) return String(iso);
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+/* Botão de ação do cartão.
+   Ele não recebe ouvinte aqui: quem escuta é um único ouvinte delegado no
+   <main>, instalado uma vez em `controles.js`. Este botão só carrega, no
+   `data-`, a informação de que a ação precisa. Assim um cartão recém-criado
+   já funciona sem que nada precise ser religado depois de cada desenho. */
+function criarAcao(tarefa) {
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'acao-cartao';
+  botao.dataset.acao = 'filtrar-prioridade';
+  botao.dataset.prioridade = tarefa.prioridade;
+  botao.textContent = `Ver só prioridade ${(PRIORIDADES[tarefa.prioridade] || tarefa.prioridade).toLowerCase()}`;
+  return botao;
 }
 
 /** Monta o <li><article> de uma tarefa. */
@@ -66,16 +88,25 @@ function criarCartao(tarefa) {
     lista.append(dt, dd);
   });
 
-  cartao.append(titulo, lista);
+  cartao.append(titulo, lista, criarAcao(tarefa));
   item.appendChild(cartao);
   return item;
 }
 
 /**
  * Desenha o array de tarefas nas quatro colunas do quadro.
- * Cada tarefa cai na coluna cujo data-status bate com o seu status.
+ * Cada tarefa cai na coluna cujo data-status bate com o seu status, na mesma
+ * ordem em que veio no array.
  *
- * @param {Array<object>} tarefas — lista já pronta para ser exibida.
+ * `replaceChildren()` troca o conteúdo da coluna de uma vez: o desenho
+ * anterior sai inteiro antes do novo entrar. É o que garante que dez
+ * mudanças de filtro não empilhem dez versões dos mesmos cartões.
+ *
+ * A contagem de cada coluna sai da mesma lista que gerou os cartões — não de
+ * uma contagem à parte, nem de `querySelectorAll` no DOM. Contar de novo, de
+ * outra fonte, é como as duas metades da tela começam a discordar.
+ *
+ * @param {Array<object>} tarefas — lista já filtrada e ordenada.
  */
 export function renderizarTarefas(tarefas) {
   const colunas = document.querySelectorAll('main section[data-status]');
@@ -84,9 +115,7 @@ export function renderizarTarefas(tarefas) {
     const lista = coluna.querySelector('ul');
     const status = coluna.dataset.status;
 
-    const daColuna = tarefas
-      .filter((tarefa) => tarefa.status === status)
-      .sort((a, b) => String(a.prazo).localeCompare(String(b.prazo)));
+    const daColuna = tarefas.filter((tarefa) => tarefa.status === status);
 
     lista.replaceChildren();
     daColuna.forEach((tarefa) => lista.appendChild(criarCartao(tarefa)));

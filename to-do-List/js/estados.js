@@ -1,16 +1,26 @@
 /* ==========================================================================
-   estados.js — decidir qual das quatro telas está valendo
+   estados.js — decidir qual tela está valendo
    ==========================================================================
 
-   A tela tem quatro estados, não um:
+   A E3 tinha quatro estados. A E4 acrescenta o quinto, e ele é a razão de
+   metade dos erros desta etapa:
 
-     carregando — o pedido saiu, a resposta ainda não voltou
-     sucesso    — vieram tarefas, o quadro é desenhado
-     vazio      — deu tudo certo, só não há tarefas para mostrar
-     erro       — alguma coisa falhou no caminho
+     carregando     — o pedido saiu, a resposta ainda não voltou
+     erro           — alguma coisa falhou no caminho
+     vazio          — deu tudo certo, a ORIGEM não tem tarefas
+     sem-resultados — a origem tem tarefas, os CRITÉRIOS não encontraram nenhuma
+     sucesso        — há tarefas visíveis, o quadro é desenhado
 
-   NÃO existe requisição aqui dentro. Este módulo não busca nada: ele recebe
-   pronto o resultado (ou o erro) e escolhe o que a pessoa vê.
+   `vazio` e `sem-resultados` parecem a mesma tela em branco e não são a mesma
+   coisa: no primeiro caso não há nada para achar, no segundo há, e a pessoa
+   só precisa mudar um critério. Dar a mesma mensagem aos dois faz alguém
+   procurar defeito no arquivo de dados quando o "defeito" é um filtro ligado.
+
+   E nenhum dos dois é `erro`: ninguém falhou, então nada disso vem do
+   `catch`. `sem-resultados` é decidido pelo tamanho da lista derivada.
+
+   NÃO existe requisição aqui dentro, e não existe filtro: este módulo recebe
+   pronto o resultado e escolhe o que a pessoa vê.
    ========================================================================== */
 
 import { renderizarTarefas } from './renderizacao.js';
@@ -75,27 +85,42 @@ function textoDoErro(erro) {
   return erro?.message ? `${base} (detalhe: ${erro.message})` : base;
 }
 
-/**
- * Aplica um dos quatro estados à tela.
- *
- * @param {'carregando'|'sucesso'|'vazio'|'erro'} estado
- * @param {Array<object>|Error} [dados] — o array, no sucesso; o erro, na falha.
- */
-export function renderizarEstado(estado, dados) {
-  const { quadro, painel, regiao } = elementos();
+/** "1 tarefa" / "10 tarefas" — concordância no plural. */
+function tarefasNoPlural(quantidade) {
+  return quantidade === 1 ? 'tarefa' : 'tarefas';
+}
 
-  /* O quadro só aparece no sucesso; nos outros três, quem fala é o painel.
-     Nenhum estado deixa a tela em branco: sempre há um dos dois visível. */
-  quadro.hidden = estado !== 'sucesso';
-  painel.hidden = estado === 'sucesso';
-  painel.className = `painel-estado painel-${estado}`;
+/**
+ * Aplica uma das cinco situações à tela.
+ *
+ * A região de status (role="status", aria-live="polite") recebe um texto
+ * diferente em cada uma delas, e no sucesso informa "N de M tarefas": os dois
+ * números vêm da mesma lista derivada que gerou os cartões, no mesmo ciclo.
+ *
+ * Nada aqui chama `focus()`. Atualizar a tela não pode mover o foco do
+ * teclado: quem está digitando na busca precisa continuar digitando, e é o
+ * `aria-live` que se encarrega de anunciar a mudança sem roubar o cursor.
+ *
+ * @param {'carregando'|'erro'|'vazio'|'sem-resultados'|'sucesso'} situacao
+ * @param {{visiveis?: Array<object>, total?: number, erro?: Error}} [dados]
+ */
+export function renderizarEstado(situacao, dados = {}) {
+  const { quadro, painel, regiao } = elementos();
+  const visiveis = dados.visiveis ?? [];
+  const total = dados.total ?? 0;
+
+  /* O quadro só aparece no sucesso; nos outros quatro, quem fala é o painel.
+     Nenhuma situação deixa a tela em branco: sempre há um dos dois visível. */
+  quadro.hidden = situacao !== 'sucesso';
+  painel.hidden = situacao === 'sucesso';
+  painel.className = `painel-estado painel-${situacao}`;
 
   /* Só um dos dois tem conteúdo por vez: o que sai de cena fica limpo, para
      não deixar restos da tela anterior escondidos no documento. */
-  if (estado === 'sucesso') painel.replaceChildren();
+  if (situacao === 'sucesso') painel.replaceChildren();
   else limparQuadro(quadro);
 
-  switch (estado) {
+  switch (situacao) {
     case 'carregando':
       escreverNoPainel(
         painel,
@@ -105,30 +130,39 @@ export function renderizarEstado(estado, dados) {
       regiao.textContent = 'Carregando tarefas.';
       break;
 
-    case 'sucesso': {
-      const tarefas = dados;
-      renderizarTarefas(tarefas);
-      regiao.textContent = tarefas.length === 1
-        ? '1 tarefa carregada.'
-        : `${tarefas.length} tarefas carregadas.`;
+    case 'sucesso':
+      renderizarTarefas(visiveis);
+      regiao.textContent =
+        `Mostrando ${visiveis.length} de ${total} ${tarefasNoPlural(total)}.`;
       break;
-    }
+
+    case 'sem-resultados':
+      escreverNoPainel(
+        painel,
+        'Nenhuma tarefa para estes critérios',
+        'As tarefas foram carregadas, mas nenhuma delas combina com a busca e '
+        + 'os filtros atuais. Altere um critério ou use "Limpar filtros" para '
+        + 'ver todas de novo.',
+      );
+      regiao.textContent =
+        `Nenhum resultado: 0 de ${total} ${tarefasNoPlural(total)} atendem aos critérios atuais.`;
+      break;
 
     case 'vazio':
       escreverNoPainel(
         painel,
         'Nenhuma tarefa por aqui',
         'O arquivo foi carregado e lido sem nenhum problema — ele só não tem '
-        + 'tarefas cadastradas. Use "+ Nova tarefa" para começar.',
+        + 'tarefas cadastradas. Não há nada para buscar ou filtrar ainda.',
       );
-      regiao.textContent = 'Nenhuma tarefa cadastrada.';
+      regiao.textContent = 'Nenhuma tarefa cadastrada na origem dos dados.';
       break;
 
     case 'erro':
       escreverNoPainel(
         painel,
         'Não foi possível carregar as tarefas',
-        textoDoErro(dados),
+        textoDoErro(dados.erro),
       );
       regiao.textContent = 'Erro ao carregar as tarefas.';
       break;
