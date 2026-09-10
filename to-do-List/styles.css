@@ -1,4 +1,29 @@
 /* ==========================================================================
+   Quadro de Tarefas — identidade visual
+   ==========================================================================
+
+   Referência: o livro manuscrito e a universidade antiga. Três decisões
+   guiam tudo o que vem abaixo:
+
+     1. PERGAMINHO E TINTA. Nada de preto puro sobre branco puro: o fundo é
+        o tom do pergaminho e o texto é tinta ferro-gálica, um marrom
+        muito escuro. É o par que o olho lê em livro impresso, e continua
+        acima de 12:1 de contraste.
+
+     2. OURO É ORNAMENTO, NUNCA TEXTO. Filetes, molduras e florões usam
+        dourado. Nenhuma informação depende dele — dourado sobre pergaminho
+        não alcança o contraste exigido para leitura.
+
+     3. RUBRICAÇÃO. No manuscrito medieval o vermelho marca o que importa:
+        a capitular de cada tarefa e a prioridade. Cor é hierarquia, não
+        decoração.
+
+   O acabamento é contemporâneo de propósito: Grid, Flexbox, cantos quase
+   retos, foco visível e modo escuro automático. A intenção é uma biblioteca
+   antiga bem iluminada, não uma imitação de pergaminho digitalizado.
+   ========================================================================== */
+
+/* ==========================================================================
    Reset e caixa de dimensionamento
    ========================================================================== */
 
@@ -20,39 +45,44 @@ ul {
   list-style: none;
 }
 
-hr {
-  border: none;
-  border-top: 1px dashed var(--color-border);
-  margin-block: var(--space-3);
-}
-
 /* ==========================================================================
    Sistema de design — propriedades personalizadas
    ========================================================================== */
 
 :root {
-  /* Papel: superfície, texto e borda */
-  --color-bg: #f6efe0;
-  --color-surface: #fffdf7;
-  --color-surface-alt: #fff8e8;
-  --color-text: #2a2f3a;
-  --color-text-muted: #4b5563;
-  --color-border: #d9cdb0;
+  /* Suportes: a página, a folha e o fólio do cartão */
+  --color-bg: #efe3ca;
+  --color-surface: #f7eeda;
+  --color-surface-alt: #f2e7cf;
 
-  /* Linhas de caderno quadriculado / pauta */
-  --paper-grid-line: #c6d9ef;
-  --paper-margin-line: #e08a93;
+  /* Tinta */
+  --color-text: #2a2018;
+  --color-text-muted: #5c4a35;
 
-  /* Uma cor por status, como canetas diferentes */
-  --color-status-fazer: #1e40af;
-  --color-status-andamento: #78350f;
-  --color-status-revisao: #6b21a8;
-  --color-status-concluida: #166534;
+  /* Filetes e molduras */
+  --color-border: #cbb591;
+  --color-rule: #b3986b;
 
-  /* Cor por prioridade, como se corrigida a caneta */
-  --pen-alta: #b91c1c;
-  --pen-media: #92400e;
-  --pen-baixa: #15803d;
+  /* Folha de ouro — só ornamento */
+  --gold: #b08d3a;
+  --gold-soft: #d6bd7e;
+
+  /* Vermelhão de rubricação: capitulares, selos, ações principais */
+  --rubrica: #7d1d1d;
+  --rubrica-forte: #5e1414;
+
+  /* Uma cor por faculdade (coluna), no lugar das quatro canetas da E2.
+     São as mesmas famílias de matiz da entrega anterior — azul, ocre,
+     púrpura e verde — reconduzidas a pigmentos de manuscrito. */
+  --color-status-fazer: #1f3557;
+  --color-status-andamento: #7a4e0e;
+  --color-status-revisao: #4a2a52;
+  --color-status-concluida: #1f4231;
+
+  /* Prioridade, em tinta de correção */
+  --pen-alta: #8b1a1a;
+  --pen-media: #7a4e0e;
+  --pen-baixa: #2f5d3a;
 
   /* Escala de espaçamento */
   --space-1: 0.5rem;
@@ -60,113 +90,204 @@ hr {
   --space-3: 1rem;
   --space-4: 1.5rem;
 
-  /* Raios de canto */
-  --radius: 0.5rem;
-  --radius-lg: 1rem;
+  /* Cantos quase retos: papel cortado, não cartão arredondado */
+  --radius: 2px;
+  --radius-lg: 3px;
 
-  /* Tipografia */
-  --font-hand: "Kalam", "Comic Sans MS", cursive;
-  --font-note: "Patrick Hand", var(--font-hand), sans-serif;
+  /* Tipografia
+     Cinzel  — capitais inscricionais romanas, a letra da pedra fundacional
+     Garamond — o desenho renascentista do livro de texto
+     Cinzel Decorative — só para a capitular e o título maior */
+  --font-titulo: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  --font-texto: "EB Garamond", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-ornamento: "Cinzel Decorative", var(--font-titulo);
+
+  /* Florão usado nos filetes ornamentais. SVG embutido: nenhuma requisição
+     extra, e por isso nada a mais para dar 404 na versão publicada. */
+  --floroes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='12' viewBox='0 0 44 12'%3E%3Cpath d='M22 1.2 26.4 6 22 10.8 17.6 6z' fill='%23b08d3a'/%3E%3Ccircle cx='8' cy='6' r='1.7' fill='%23b08d3a'/%3E%3Ccircle cx='36' cy='6' r='1.7' fill='%23b08d3a'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   Modo escuro — a mesma biblioteca à luz de vela
+   --------------------------------------------------------------------------
+   Só os tokens mudam. Nenhuma regra de layout é reescrita: é o que prova que
+   a paleta estava mesmo centralizada, e não espalhada pelo arquivo.        */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #17120d;
+    --color-surface: #211a13;
+    --color-surface-alt: #1c1610;
+
+    --color-text: #ece0c8;
+    --color-text-muted: #c0ac8c;
+
+    --color-border: #4a3c29;
+    --color-rule: #6b563a;
+
+    --gold: #cda54c;
+    --gold-soft: #8a6f34;
+
+    --rubrica: #a83232;
+    --rubrica-forte: #8f2626;
+
+    --color-status-fazer: #93b4e2;
+    --color-status-andamento: #d7a544;
+    --color-status-revisao: #bb98cd;
+    --color-status-concluida: #85c39b;
+
+    --pen-alta: #e08585;
+    --pen-media: #d7a544;
+    --pen-baixa: #8ecfa5;
+  }
+}
+
+/* O florão em ouro claro, para não escurecer sobre o fundo noturno. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --floroes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='12' viewBox='0 0 44 12'%3E%3Cpath d='M22 1.2 26.4 6 22 10.8 17.6 6z' fill='%23cda54c'/%3E%3Ccircle cx='8' cy='6' r='1.7' fill='%23cda54c'/%3E%3Ccircle cx='36' cy='6' r='1.7' fill='%23cda54c'/%3E%3C/svg%3E");
+  }
 }
 
 /* ==========================================================================
-   Base — papel quadriculado por trás de tudo
-   ========================================================================== */
+   Base — a folha
+   ==========================================================================
+
+   O fundo tem quatro camadas, todas em CSS: nenhuma imagem externa, nada a
+   mais para falhar na versão publicada.
+
+     1. vinheta fixa, que escurece as bordas como a luz de uma janela só;
+     2. duas manchas de envelhecimento, fora do centro;
+     3. as linhas verticais do papel vergê, quase invisíveis, no lugar do
+        quadriculado de caderno da E2.                                      */
 
 body {
-  font-family: var(--font-note);
-  font-size: 1.0625rem;
+  font-family: var(--font-texto);
+  font-size: 1.125rem;
   line-height: 1.6;
   color: var(--color-text);
   background-color: var(--color-bg);
   background-image:
-    linear-gradient(var(--paper-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--paper-grid-line) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
+    radial-gradient(ellipse at 50% 40%, transparent 52%, rgba(52, 34, 12, 0.18)),
+    radial-gradient(ellipse at 18% 8%, rgba(150, 110, 50, 0.09), transparent 58%),
+    radial-gradient(ellipse at 84% 72%, rgba(120, 84, 38, 0.08), transparent 55%),
+    repeating-linear-gradient(90deg, rgba(120, 92, 48, 0.05) 0 1px, transparent 1px 26px);
+  background-attachment: fixed, scroll, scroll, scroll;
 }
 
 h1 {
-  font-family: var(--font-hand);
+  font-family: var(--font-ornamento);
   font-weight: 700;
-  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem);
-  line-height: 1.15;
-  transform: rotate(-1deg);
+  font-size: clamp(1.9rem, 1.2rem + 2.8vw, 3.25rem);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 h2 {
-  font-family: var(--font-hand);
+  font-family: var(--font-titulo);
   font-weight: 700;
-  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.375rem);
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.3rem);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Filete ornamental: um traço duplo com um florão ao centro. O florão é
+   fundo, não conteúdo — assim ele não é anunciado por leitor de tela, que
+   não tem nada a fazer com um enfeite. */
+hr {
+  height: 12px;
+  border: none;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  background: var(--floroes) no-repeat center;
+  background-color: var(--color-bg);
+  margin-block: var(--space-4);
+  opacity: 0.9;
 }
 
 /* ==========================================================================
-   Cabeçalho — folha de rosto do caderno
-   ========================================================================== */
+   Cabeçalho — a folha de rosto
+   ==========================================================================
+   A E2 desenhava aqui uma folha de caderno: furos de espiral e margem
+   vermelha. O motivo agora é o frontispício: moldura de dois filetes, título
+   em capitais e subtítulo em versaletes.                                    */
 
 header {
   position: relative;
-  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
-  padding-left: clamp(3rem, 2rem + 4vw, 5rem);
+  padding: clamp(1.75rem, 1rem + 3vw, 3rem) clamp(1rem, 0.5rem + 3vw, 3rem);
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  overflow: hidden;
+  border-bottom: 3px double var(--color-rule);
+  text-align: center;
 }
 
-/* furos de espiral, no topo da folha */
-header::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 0.9rem;
-  background-image: repeating-radial-gradient(
-    circle,
-    var(--color-bg) 0 0.2rem,
-    var(--color-surface) 0.22rem 0.95rem
-  );
-  background-size: 1.6rem 1.6rem;
-  background-position: 0.8rem center;
-}
-
-/* linha vermelha de margem, como numa folha de caderno */
+/* Filete de ouro rente ao topo, como o corte dourado de um livro. */
 header::before {
   content: "";
   position: absolute;
-  top: 0.9rem;
-  bottom: 0;
-  left: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);
-  width: 2px;
-  background: var(--paper-margin-line);
-  opacity: 0.6;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-soft) 15%,
+    var(--gold) 50%,
+    var(--gold-soft) 85%,
+    transparent
+  );
 }
 
-header p {
+header > p {
+  margin-top: var(--space-1);
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  font-size: 1rem;
   color: var(--color-text-muted);
-  font-size: 1.05rem;
+}
+
+/* ==========================================================================
+   Busca e filtros — a cartela
+   ========================================================================== */
+
+/* <search> é elemento novo; navegador que não o conhece o trataria como
+   inline, e o grid interno não teria largura para ocupar. */
+search {
+  display: block;
+  max-width: 60rem;
+  margin: var(--space-4) auto 0;
+  text-align: left;
 }
 
 fieldset {
-  border: 2px dashed var(--color-border);
+  border: 3px double var(--color-rule);
   border-radius: var(--radius-lg);
-  padding: var(--space-3);
+  padding: var(--space-4) var(--space-3) var(--space-3);
   background: var(--color-surface-alt);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-2) var(--space-3);
 }
 
+/* Faixa de selo: fundo em vermelhão, letra em capitais espaçadas. */
 legend {
-  font-family: var(--font-hand);
+  font-family: var(--font-titulo);
   font-weight: 700;
-  padding: 0.15rem var(--space-2);
-  background: var(--color-status-fazer);
-  color: #ffffff;
+  font-size: 0.9375rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.2rem var(--space-3);
+  background: var(--rubrica);
+  color: #f7eeda;
+  border: 1px solid var(--gold);
   border-radius: var(--radius);
-  transform: rotate(-1.5deg);
 }
 
+/* Rótulos em versaletes: é a convenção do livro para etiquetar sem gritar. */
 fieldset label {
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-family: var(--font-titulo);
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
   align-self: center;
 }
 
@@ -175,27 +296,131 @@ fieldset select {
   width: 100%;
   min-height: 2.75rem;
   padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-text);
-  font-family: var(--font-note);
-  font-size: 1rem;
+  font-family: var(--font-texto);
+  font-size: 1.0625rem;
+  /* sombra interna curta: a impressão de campo escavado no papel */
+  box-shadow: inset 0 1px 2px rgba(66, 46, 20, 0.12);
+}
+
+fieldset input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.75;
+  font-style: italic;
 }
 
 fieldset button {
   min-height: 2.75rem;
   min-width: 6rem;
   padding: var(--space-1) var(--space-3);
-  border: 2px solid var(--color-status-fazer);
+  border: 1px solid var(--gold);
   border-radius: var(--radius);
-  background: var(--color-status-fazer);
-  color: #ffffff;
-  font-family: var(--font-hand);
+  background: var(--rubrica);
+  color: #f7eeda;
+  font-family: var(--font-titulo);
   font-weight: 700;
-  font-size: 1.0625rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  justify-self: start;
+  transition: background-color 0.15s ease;
+}
+
+fieldset button:hover {
+  background: var(--rubrica-forte);
+}
+
+/* Os dois botões dividem uma linha só. flex-wrap é o que mantém a promessa
+   da E2 em 320px: em vez de estourar a largura, o segundo botão desce. */
+.acoes-busca {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* "Limpar filtros" é ação secundária: mesmo alvo de toque, sem o vermelhão. */
+.botao-secundario {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-rule);
+}
+
+.botao-secundario:hover {
+  background: var(--color-surface);
+  border-color: var(--gold);
+}
+
+/* ==========================================================================
+   Região de resultados e painéis de estado
+   ==========================================================================
+   A região viva é a nota à margem do manuscrito: mesma folha, tinta mais
+   clara, itálico. Ela NÃO recebe ::before nem ::after — conteúdo gerado
+   dentro de uma região aria-live pode ser anunciado junto da mensagem a cada
+   atualização, e o leitor de tela passaria a ler o enfeite também.         */
+
+.regiao-status {
+  max-width: 60rem;
+  margin: var(--space-4) auto 0;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--gold-soft);
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 1.0625rem;
+  min-height: 1.6rem;
+}
+
+/* Painel de carregando, origem vazia, resultado vazio e erro. */
+.painel-estado {
+  max-width: 44rem;
+  margin: var(--space-4) auto;
+  padding: var(--space-4);
+  border: 3px double var(--color-rule);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(60, 40, 16, 0.1);
+}
+
+.painel-estado h2 {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-ornamento);
+  letter-spacing: 0.06em;
+}
+
+.painel-estado p {
+  max-width: 46ch;
+  margin-inline: auto;
+  color: var(--color-text-muted);
+}
+
+/* Cada situação com sua cor: quatro telas distintas, quatro causas
+   distintas, e a cor ajuda a ler isso antes do texto. */
+.painel-carregando h2 { color: var(--color-status-fazer); }
+.painel-vazio h2 { color: var(--color-status-andamento); }
+.painel-sem-resultados h2 { color: var(--color-status-revisao); }
+.painel-erro h2 { color: var(--pen-alta); }
+
+/* O erro é o único com moldura sólida e em vermelhão: é o que o distingue
+   de longe dos dois painéis que não são falha nenhuma. */
+.painel-erro {
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--pen-alta);
+}
+
+/* Florão girando enquanto carrega, no lugar do lápis da E3. */
+.painel-carregando h2::after {
+  content: " \2748";
+  display: inline-block;
+  color: var(--gold);
+  animation: girando 3s linear infinite;
+}
+
+@keyframes girando {
+  to { transform: rotate(360deg); }
 }
 
 /* ==========================================================================
@@ -221,28 +446,32 @@ main section {
   padding: var(--space-4) var(--space-3) var(--space-3);
 }
 
+/* Uma cor por coluna, como as faculdades de uma universidade antiga. */
 .afazer      { --status-color: var(--color-status-fazer); }
 .emandamento { --status-color: var(--color-status-andamento); }
 .emrevisao   { --status-color: var(--color-status-revisao); }
 .concluidas  { --status-color: var(--color-status-concluida); }
 
-/* fita adesiva prendendo a coluna, como num mural */
+/* Cabeceira tingida no topo da coluna, como a cabeça dourada de um livro
+   encadernado. Substitui a fita adesiva da E2. */
 main section::before {
   content: "";
   position: absolute;
-  top: -0.6rem;
-  left: var(--space-3);
-  width: 3.5rem;
-  height: 1.15rem;
+  inset: 0 0 auto 0;
+  height: 6px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background: var(--status-color);
-  opacity: 0.85;
-  transform: rotate(-3deg);
-  border-radius: 2px;
 }
 
+/* Título de coluna como cabeça de capítulo: capitais, filete embaixo e uma
+   barra na cor da faculdade. Barra é borda, não caractere: nada de enfeite
+   textual para o leitor de tela anunciar. */
 main section h2 {
   color: var(--status-color);
-  transform: rotate(-0.5deg);
+  padding-left: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-left: 4px solid var(--status-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 main section ul {
@@ -256,13 +485,29 @@ main section li {
   min-width: 0;
 }
 
+/* Contagem de cada coluna, em algarismos de tinta discreta. */
+.contador {
+  font-family: var(--font-texto);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-text-muted);
+}
+
 /* ==========================================================================
-   Cartão de tarefa — folha de caderno arrancada
-   ========================================================================== */
+   Cartão de tarefa — o fólio
+   ==========================================================================
+   A E2 desenhava um pedaço de folha arrancada, torto, com clipe de papel.
+   Agora cada tarefa é uma folha de códice: moldura de dois filetes,
+   capitular rubricada e o prazo no pé, como o reclamo no fim da página.
+
+   Saíram de cena a rotação e o emoji. Um cartão girado desalinha a leitura
+   das quatro colunas, e o título com reticências escondia justamente o dado
+   pelo qual a busca desta entrega procura.                                  */
 
 article {
   position: relative;
-  z-index: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -272,53 +517,44 @@ article {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: var(--space-3);
-  box-shadow: 0 2px 6px rgba(42, 47, 58, 0.12);
-  transform: rotate(var(--tilt, -0.5deg));
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-main section li:nth-child(even) article {
-  --tilt: 0.5deg;
+  /* filete interno (a moldura de dois traços) + sombra curta de folha */
+  box-shadow:
+    inset 0 0 0 1px var(--color-surface),
+    inset 0 0 0 2px rgba(179, 152, 107, 0.35),
+    0 2px 6px rgba(60, 40, 16, 0.1);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 article:hover,
 article:focus-within {
-  transform: rotate(0deg);
-  box-shadow: 0 6px 14px rgba(42, 47, 58, 0.18);
+  border-color: var(--gold);
+  box-shadow:
+    inset 0 0 0 1px var(--color-surface),
+    inset 0 0 0 2px var(--gold-soft),
+    0 4px 12px rgba(60, 40, 16, 0.16);
 }
 
-/* folha "de baixo" da pilha, para dar volume de papel */
-article::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  transform: rotate(-1.4deg);
-}
-
-/* clipe de papel decorativo no canto do cartão */
-article::before {
-  content: "\1F4CE";
-  position: absolute;
-  top: -0.6rem;
-  right: 0.6rem;
-  font-size: 1.15rem;
-  transform: rotate(12deg);
-  pointer-events: none;
-}
-
+/* Título da tarefa, com capitular rubricada.
+   `::first-letter` faz isso em CSS puro: nenhuma marcação a mais, e o título
+   continua sendo uma única palavra para a busca e para o leitor de tela.
+   O texto quebra em duas linhas em vez de ser cortado por reticências. */
 article h3 {
-  font-family: var(--font-hand);
+  font-family: var(--font-titulo);
   font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
   min-width: 0;
-  font-size: 1.125rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-image: linear-gradient(to bottom, transparent 72%, #fde68a99 72%);
+  overflow-wrap: anywhere;
+}
+
+article h3::first-letter {
+  float: left;
+  margin-right: 0.12em;
+  font-family: var(--font-ornamento);
+  font-size: 2.4em;
+  line-height: 0.86;
+  color: var(--rubrica);
 }
 
 article dl {
@@ -326,11 +562,15 @@ article dl {
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  gap: var(--space-1);
+  gap: 0.15rem;
 }
 
+/* Etiquetas em versaletes, como as glosas de um manuscrito. */
 article dt {
-  font-size: 0.875rem;
+  font-family: var(--font-titulo);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
@@ -339,74 +579,164 @@ article dd {
   overflow-wrap: anywhere;
 }
 
-/* prazo com um alfinete, marcando a página */
-article dt:nth-of-type(3)::before {
-  content: "\1F4CC ";
+article dd + dt {
+  margin-top: var(--space-1);
 }
 
-/* prioridade logo abaixo do título, como um selo circulado à caneta */
+/* Prioridade acima do título, como a rubrica que abre o parágrafo. */
 article dt:nth-of-type(4),
 article dd:nth-of-type(4) {
   order: -1;
 }
 
 article dt:nth-of-type(4) {
-  font-size: 0.75rem;
+  /* a etiqueta "Prioridade" é redundante ao lado da própria palavra em
+     destaque, mas continua no documento para o leitor de tela */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 article dd:nth-of-type(4) {
-  display: inline-flex;
   align-self: flex-start;
-  padding: 0.1rem var(--space-2);
-  border: 2px solid currentColor;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  font-family: var(--font-hand);
+  padding: 0.05rem var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  font-family: var(--font-titulo);
   font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .prioridade-alta  { color: var(--pen-alta); }
 .prioridade-media { color: var(--pen-media); }
 .prioridade-baixa { color: var(--pen-baixa); }
 
-/* prazo fixado na base do cartão */
+/* Prazo fixado no pé do cartão, separado por um filete. */
 article dt:nth-of-type(3) {
   margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Ação do cartão: discreta, porque o conteúdo da tarefa é que importa.
+   2.25rem de altura mínima ainda é confortável de acertar no toque. */
+.acao-cartao {
+  align-self: flex-start;
+  min-height: 2.25rem;
+  padding: 0.1rem var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-titulo);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.acao-cartao:hover {
+  border-color: var(--gold);
+  color: var(--color-text);
 }
 
 /* ==========================================================================
-   Rodapé
-   ========================================================================== */
+   Coluna vazia
+   ==========================================================================
+   Em CSS puro, para não misturar essa decoração com a lógica das cinco telas
+   que vive no JavaScript. O texto é uma nota à margem: itálico, tinta clara,
+   moldura interrompida.                                                     */
+
+main section ul:empty::after {
+  content: "Sem tarefas nesta coluna.";
+  display: block;
+  padding: var(--space-3);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Rodapé — o cólofon
+   ==========================================================================
+   No fim do livro manuscrito, o cólofon registra quem copiou e onde. Aqui
+   ele registra quem assina a entrega.                                       */
 
 footer {
-  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem) var(--space-4);
+  text-align: center;
   color: var(--color-text-muted);
 }
 
+footer::before {
+  content: "";
+  display: block;
+  height: 12px;
+  margin-bottom: var(--space-3);
+  background: var(--floroes) no-repeat center;
+}
+
 footer h2 {
-  font-size: 1.05rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  letter-spacing: 0.14em;
+}
+
+footer p {
+  margin-top: var(--space-1);
+  font-style: italic;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
 }
 
 /* ==========================================================================
    Acessibilidade — foco visível
-   ========================================================================== */
+   ==========================================================================
+   O anel de foco é a única coisa nesta folha que pode gritar. Dourado sozinho
+   não teria contraste sobre pergaminho, então o anel é de tinta, e o
+   afastamento de 2px é o que o mantém legível sobre campo escuro ou claro. */
 
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--color-status-fazer);
+  outline: 3px solid var(--rubrica);
   outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline-color: var(--gold);
+  }
+}
+
+/* `hidden` sozinho não vence o `display: grid` de main; esta regra garante
+   que o quadro realmente suma nas telas que não são de sucesso. */
+main[hidden],
+.painel-estado[hidden] {
+  display: none;
 }
 
 /* ==========================================================================
    Breakpoints (mobile-first, min-width)
    ========================================================================== */
 
-/* 30rem (480px): a busca já tem largura suficiente para colocar cada rótulo
-   ao lado do seu campo, em vez de empilhado, sem espremer os campos */
+/* 30rem (480px): a cartela já tem largura para pôr cada rótulo ao lado do
+   seu campo, em vez de empilhado, sem espremer os campos */
 @media (min-width: 30rem) {
   fieldset {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
 
@@ -423,23 +753,14 @@ select:focus-visible {
   }
 }
 
-/* 64rem (1024px): a tela é larga o bastante para as quatro colunas de
-   status lado a lado sem apertar o conteúdo dos cartões */
+/* 64rem (1024px): a tela é larga o bastante para as quatro colunas lado a
+   lado sem apertar o conteúdo dos cartões */
 @media (min-width: 64rem) {
   main {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-/* ==========================================================================
-   Contador de tarefas por coluna
-   ========================================================================== */
 
-.contador {
-  font-family: var(--font-note);
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-}
 /* ==========================================================================
    Movimento reduzido
    ========================================================================== */
@@ -448,134 +769,12 @@ select:focus-visible {
   article {
     transition: none;
   }
-}
 
-/* ==========================================================================
-   E3 — região viva e os quatro estados da tela
-   ========================================================================== */
-
-/* Região anunciada a leitores de tela. Fica visível também para quem enxerga:
-   é onde aparece a contagem de tarefas no estado de sucesso. */
-.regiao-status {
-  padding: 0 clamp(1rem, 0.5rem + 3vw, 3rem);
-  margin-top: var(--space-3);
-  color: var(--color-text-muted);
-  font-size: 0.9375rem;
-  min-height: 1.5rem;
-}
-
-/* Painel de carregando, vazio e erro. */
-.painel-estado {
-  margin: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
-  padding: var(--space-4);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  text-align: center;
-}
-
-.painel-estado h2 {
-  margin-bottom: var(--space-2);
-  transform: rotate(-0.5deg);
-}
-
-.painel-estado p {
-  max-width: 44ch;
-  margin-inline: auto;
-  color: var(--color-text-muted);
-}
-
-/* Cada estado com sua cor, para que as telas sejam mesmo distintas. */
-.painel-carregando h2 { color: var(--color-status-fazer); }
-.painel-vazio      h2 { color: var(--color-status-andamento); }
-.painel-erro       h2 { color: var(--pen-alta); }
-
-.painel-erro {
-  border-color: var(--pen-alta);
-  border-style: solid;
-}
-
-/* Lápis girando enquanto carrega. */
-.painel-carregando h2::after {
-  content: " \270E";
-  display: inline-block;
-  animation: girando 1.2s linear infinite;
-}
-
-@keyframes girando {
-  to { transform: rotate(360deg); }
-}
-
-/* `hidden` sozinho não vence o `display: grid` de main; esta regra garante
-   que o quadro realmente suma nos estados que não são de sucesso. */
-main[hidden],
-.painel-estado[hidden] {
-  display: none;
-}
-
-/* Coluna sem nenhum cartão — em CSS puro, para não misturar essa decoração
-   com a lógica dos quatro estados que vive no JavaScript. */
-main section ul:empty::after {
-  content: "Sem tarefas nesta coluna.";
-  display: block;
-  padding: var(--space-3);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text-muted);
-  font-size: 0.9375rem;
-  text-align: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
   .painel-carregando h2::after {
     animation: none;
   }
-}
 
-/* ==========================================================================
-   E4 — controles em funcionamento
-   ========================================================================== */
-
-/* Os dois botões da busca dividem uma linha só. `flex-wrap` é o que mantém a
-   promessa da E2 em 320px: em vez de estourar a largura, o segundo botão
-   desce para a linha de baixo, e a página nunca rola na horizontal. */
-.acoes-busca {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* "Limpar filtros" é uma ação secundária: mesmo tamanho de alvo de toque do
-   botão principal, peso visual menor, para não competir com ele. */
-.botao-secundario {
-  border-color: var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
-/* Ação dentro do cartão. Discreta, porque o conteúdo da tarefa é que importa;
-   com 2.25rem de altura mínima, ainda é confortável de acertar no toque. */
-.acao-cartao {
-  align-self: flex-start;
-  min-height: 2.25rem;
-  padding: 0.15rem var(--space-2);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-family: var(--font-note);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.acao-cartao:hover {
-  border-style: solid;
-  color: var(--color-text);
-}
-
-/* O painel de resultado vazio precisa parecer diferente do painel de erro e
-   do painel de origem vazia — são três telas distintas, com três causas
-   distintas, e a cor ajuda a ler isso antes do texto. */
-.painel-sem-resultados h2 {
-  color: var(--color-status-revisao);
+  fieldset button {
+    transition: none;
+  }
 }
