@@ -6,13 +6,25 @@
     <title>Quadro de Tarefas — Projetos Acadêmicos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <!-- Special Elite: tipos de máquina de escrever com desgaste de tinta,
+         para os carimbos e títulos. Courier Prime: o Courier redesenhado para
+         tela, para o texto datilografado. Pilha de reserva em styles.css. -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
+        <!-- Convenção real de marcação: a banner line, com a classificação
+             mais alta contida no documento, aparece no cabeçalho E no pé de
+             cada página. A do pé está no <footer>. -->
+        <p class="faixa-classificacao" aria-hidden="true">TOP SECRET // GROOM LAKE // NOFORN</p>
+
         <h1>Quadro de Tarefas</h1>
-        <p>Projetos Acadêmicos</p>
+        <p class="subtitulo">Projetos Acadêmicos</p>
+
+        <p class="linha-controle" aria-hidden="true">DOC. N.º 51-E4 &middot; CÓPIA 3 DE 12 &middot; FOLHA 1 DE 1 &middot; CÓPIA SANITIZADA</p>
+
+        <p class="aviso-perimetro" aria-hidden="true">Aviso: fotografia proibida (18 U.S.C. 795) &middot; uso de força letal autorizado</p>
         <br>
         <hr>
         <search>
@@ -98,8 +110,23 @@
     <footer>
         <h2>Gabriel Rodrigues Costa Ferreira</h2>
         <p>Desenvolvimento Front-End</p>
+
+        <!-- Bloco de autoridade de classificação: nos documentos reais é onde
+             se registra de onde a classificação foi derivada e quando ela
+             cai. O selo abaixo imita o "Approved For Release" que o CREST
+             estampa nas cópias liberadas por FOIA. -->
+        <p class="bloco-autoridade" aria-hidden="true">Derived From: PROJ-ULBRA-FRONT-END (E1&ndash;E4)<br>Declassify On: 2026-09-16</p>
+
+        <p class="selo-liberacao" aria-hidden="true">Approved For Release 2026/09/15 &middot; ULBRA-RDP-E4-0004</p>
+
+        <p class="faixa-classificacao" aria-hidden="true">TOP SECRET // GROOM LAKE // NOFORN</p>
     </footer>
     <br>
     <script type="module" src="js/main.js"></script>
+
+    <!-- Módulo à parte, de propósito: só apresentação. Não é importado por
+         main.js e não participa do ciclo de dados. Se falhar, a aplicação
+         continua inteira — apaga-se a lanterna, nada mais. -->
+    <script type="module" src="js/efeitos.js"></script>
 </body>
 </html>

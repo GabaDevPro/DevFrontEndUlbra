@@ -1,4 +1,30 @@
 /* ==========================================================================
+   Quadro de Tarefas — dossiê desclassificado
+   ==========================================================================
+
+   A estética imita um documento classificado liberado por FOIA, do tipo que
+   a CIA publica no acervo CREST. As convenções abaixo são reais, não
+   inventadas — cada uma está documentada no README:
+
+     BANNER LINE   a classificação mais alta do documento aparece em faixa
+                   no cabeçalho E no pé da página (aqui, no header e no
+                   footer, ambas aria-hidden: são cenário).
+     CÓDIGO DE COR laranja = TOP SECRET (SF 703), vermelho = SECRET
+                   (SF 704), azul = CONFIDENTIAL (SF 705). É o código dos
+                   cover sheets americanos, aplicado aqui às três
+                   prioridades.
+     TARJA         o retângulo preto sobre o texto sanitizado. Aqui ele cobre
+                   o responsável e levanta quando o ponteiro passa.
+     BLOCO DE      "Derived From" e "Declassify On", no pé — onde o documento
+     AUTORIDADE    registra de onde a classificação veio e quando ela cai.
+
+   Três suportes se empilham: a mesa escura, a pasta de papel-manilha (as
+   colunas) e a fotocópia (os cartões). O texto vive sempre na fotocópia ou
+   na pasta, nunca na mesa — é o que mantém o contraste alto mesmo com o
+   fundo escuro.
+   ========================================================================== */
+
+/* ==========================================================================
    Reset e caixa de dimensionamento
    ========================================================================== */
 
@@ -20,39 +46,46 @@ ul {
   list-style: none;
 }
 
-hr {
-  border: none;
-  border-top: 1px dashed var(--color-border);
-  margin-block: var(--space-3);
-}
-
 /* ==========================================================================
    Sistema de design — propriedades personalizadas
    ========================================================================== */
 
 :root {
-  /* Papel: superfície, texto e borda */
-  --color-bg: #f6efe0;
-  --color-surface: #fffdf7;
-  --color-surface-alt: #fff8e8;
-  --color-text: #2a2f3a;
-  --color-text-muted: #4b5563;
-  --color-border: #d9cdb0;
+  /* Os três suportes */
+  --color-bg: #23211d;          /* a mesa do arquivo */
+  --color-surface: #f3f0e7;     /* a fotocópia */
+  --color-surface-alt: #d9c9a3; /* a pasta de papel-manilha */
 
-  /* Linhas de caderno quadriculado / pauta */
-  --paper-grid-line: #c6d9ef;
-  --paper-margin-line: #e08a93;
+  /* Datilografia */
+  --color-text: #1b1917;
+  --color-text-muted: #4c473f;
+  --color-border: #a8977a;
+  --color-tarja: #14120f;       /* o preto da censura */
 
-  /* Uma cor por status, como canetas diferentes */
-  --color-status-fazer: #1e40af;
-  --color-status-andamento: #78350f;
-  --color-status-revisao: #6b21a8;
-  --color-status-concluida: #166534;
+  /* Código de cor dos cover sheets (SF 703 / 704 / 705).
+     As variantes -texto são escurecidas até passar 4,5:1 sobre a fotocópia:
+     o laranja do SF 703, puro, não tem contraste para servir de texto. */
+  --sf703: #cf6c08;             /* TOP SECRET  */
+  --sf703-texto: #8a4300;
+  --sf704: #b3261e;             /* SECRET      */
+  --sf704-texto: #97170f;
+  --sf705: #1c4e9c;             /* CONFIDENTIAL*/
+  --sf705-texto: #17427f;
 
-  /* Cor por prioridade, como se corrigida a caneta */
-  --pen-alta: #b91c1c;
-  --pen-media: #92400e;
-  --pen-baixa: #15803d;
+  /* Prioridade recebe o código de cor acima */
+  --pen-alta: var(--sf703-texto);
+  --pen-media: var(--sf704-texto);
+  --pen-baixa: var(--sf705-texto);
+
+  /* Uma tinta de carimbo por etapa do processo */
+  --color-status-fazer: #1f3f7a;
+  --color-status-andamento: #6b4a12;
+  --color-status-revisao: #5b2a6e;
+  --color-status-concluida: #1f5c34;
+
+  /* Terminal do arquivo: a região de resultados é um monitor âmbar */
+  --crt-bg: #14150f;
+  --crt-texto: #ffb000;
 
   /* Escala de espaçamento */
   --space-1: 0.5rem;
@@ -60,146 +93,372 @@ hr {
   --space-3: 1rem;
   --space-4: 1.5rem;
 
-  /* Raios de canto */
-  --radius: 0.5rem;
-  --radius-lg: 1rem;
+  /* Papel cortado por guilhotina: cantos retos */
+  --radius: 0;
+  --radius-lg: 2px;
 
-  /* Tipografia */
-  --font-hand: "Kalam", "Comic Sans MS", cursive;
-  --font-note: "Patrick Hand", var(--font-hand), sans-serif;
+  /* Tipografia de máquina de escrever */
+  --font-carimbo: "Special Elite", "Courier New", Courier, monospace;
+  --font-texto: "Courier Prime", "Courier New", Courier, monospace;
+
+  /* Ruído de fotocópia: listras horizontais quase invisíveis */
+  --xerox: repeating-linear-gradient(0deg, rgba(20, 18, 15, 0.022) 0 1px, transparent 1px 3px);
+
+  /* Carimbo de borracha, em SVG embutido — imagem, não texto, e por isso
+     nenhum leitor de tela tem o que anunciar aqui. */
+  --carimbo-visto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='74' viewBox='0 0 230 74'%3E%3Cg transform='rotate(-9 115 37)'%3E%3Crect x='5' y='8' width='220' height='58' fill='none' stroke='%23b3261e' stroke-width='3'/%3E%3Crect x='11' y='14' width='208' height='46' fill='none' stroke='%23b3261e' stroke-width='1.5'/%3E%3Ctext x='115' y='47' fill='%23b3261e' font-family='Courier New,monospace' font-size='23' font-weight='700' letter-spacing='3' text-anchor='middle'%3ECONSULTADO%3C/text%3E%3C/g%3E%3C/svg%3E");
+
+  --carimbo-negado: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70' viewBox='0 0 200 70'%3E%3Cg transform='rotate(-12 100 35)'%3E%3Crect x='4' y='8' width='192' height='54' fill='none' stroke='%23b3261e' stroke-width='4'/%3E%3Ctext x='100' y='46' fill='%23b3261e' font-family='Courier New,monospace' font-size='26' font-weight='700' letter-spacing='4' text-anchor='middle'%3ENEGADO%3C/text%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   Modo escuro — o mesmo arquivo, com a luz baixa
+   --------------------------------------------------------------------------
+   O documento continua sendo um documento: o papel não vira preto. Ele só
+   perde brilho, para não ofuscar no escuro, e a mesa escurece mais.        */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #15140f;
+    --color-surface: #ddd9cd;
+    --color-surface-alt: #ccbfa0;
+    --color-border: #8d7d63;
+  }
 }
 
 /* ==========================================================================
-   Base — papel quadriculado por trás de tudo
+   Base — a mesa do arquivo
    ========================================================================== */
 
 body {
-  font-family: var(--font-note);
+  font-family: var(--font-texto);
   font-size: 1.0625rem;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--color-text);
   background-color: var(--color-bg);
-  background-image:
-    linear-gradient(var(--paper-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--paper-grid-line) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
+  /* Vinheta fixa: a mesa recebe luz de um ponto só, e escurece nas bordas. */
+  background-image: radial-gradient(ellipse at 50% 30%, rgba(120, 108, 84, 0.16), transparent 62%);
+  background-attachment: fixed;
+}
+
+/* --------------------------------------------------------------------------
+   A LANTERNA
+   --------------------------------------------------------------------------
+   O facho segue o ponteiro. As coordenadas chegam em `--ponteiro-x/y`,
+   escritas por `js/efeitos.js`; aqui só se decide o que fazer com elas.
+
+   Duas travas importantes:
+
+     `pointer-events: none` — a camada cobre a tela inteira e não pode
+     interceptar um clique. Sem isso, nada na página seria clicável.
+
+     a classe `.com-lanterna` — o CSS só entra em cena se o JavaScript
+     tiver ligado o efeito. Sem ele, não fica um facho apagado no meio da
+     tela nem uma camada inútil por cima de tudo.                          */
+
+html.com-lanterna body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    circle 240px at var(--ponteiro-x, 50%) var(--ponteiro-y, 40%),
+    rgba(255, 226, 150, 0.16),
+    rgba(255, 226, 150, 0.05) 55%,
+    transparent 72%
+  );
+}
+
+html.lanterna-acesa body::after {
+  opacity: 1;
 }
 
 h1 {
-  font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem);
-  line-height: 1.15;
-  transform: rotate(-1deg);
+  font-family: var(--font-carimbo);
+  font-size: clamp(1.75rem, 1.15rem + 2.6vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 h2 {
-  font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.375rem);
+  font-family: var(--font-carimbo);
+  font-size: clamp(1rem, 0.92rem + 0.5vw, 1.2rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Linha pontilhada de "destaque aqui", como no formulário datilografado. */
+hr {
+  border: none;
+  border-top: 1px dashed var(--color-border);
+  margin-block: var(--space-3);
 }
 
 /* ==========================================================================
-   Cabeçalho — folha de rosto do caderno
+   Cabeçalho — a primeira folha do dossiê
    ========================================================================== */
 
 header {
   position: relative;
-  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
-  padding-left: clamp(3rem, 2rem + 4vw, 5rem);
+  padding: 0 0 var(--space-3);
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  overflow: hidden;
+  background-image: var(--xerox);
+  border-bottom: 2px solid var(--color-tarja);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
-/* furos de espiral, no topo da folha */
-header::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 0.9rem;
-  background-image: repeating-radial-gradient(
-    circle,
-    var(--color-bg) 0 0.2rem,
-    var(--color-surface) 0.22rem 0.95rem
-  );
-  background-size: 1.6rem 1.6rem;
-  background-position: 0.8rem center;
+header > h1,
+header > .subtitulo,
+header > .linha-controle,
+header > .aviso-perimetro,
+header > hr,
+header > search {
+  margin-inline: clamp(1rem, 0.5rem + 3vw, 3rem);
 }
 
-/* linha vermelha de margem, como numa folha de caderno */
-header::before {
-  content: "";
-  position: absolute;
-  top: 0.9rem;
-  bottom: 0;
-  left: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);
-  width: 2px;
-  background: var(--paper-margin-line);
-  opacity: 0.6;
+header > h1 {
+  margin-top: var(--space-4);
 }
 
-header p {
+.subtitulo {
+  margin-top: 0.15rem;
   color: var(--color-text-muted);
-  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.875rem;
+}
+
+/* A banner line: faixa preta com a classificação, no topo e no pé. */
+.faixa-classificacao {
+  padding: 0.35rem var(--space-3);
+  background: var(--color-tarja);
+  color: var(--color-surface);
+  font-family: var(--font-carimbo);
+  font-size: clamp(0.6875rem, 0.62rem + 0.35vw, 0.9375rem);
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* Linha de controle do documento: número, cópia, folha. */
+.linha-controle {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* Placa do perímetro de Groom Lake: fundo claro, tarja vermelha, caixa
+   alta. O texto é o da sinalização real (18 U.S.C. 795). */
+.aviso-perimetro {
+  margin-top: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 2px solid var(--sf704);
+  border-left-width: 8px;
+  background: rgba(179, 38, 30, 0.06);
+  color: var(--sf704-texto);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Busca e filtros — o formulário de requisição
+   ========================================================================== */
+
+search {
+  display: block;
 }
 
 fieldset {
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  background: var(--color-surface-alt);
+  border: 2px solid var(--color-tarja);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  background: rgba(20, 18, 15, 0.04);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-2) var(--space-3);
 }
 
+/* Legenda como carimbo aplicado por cima da borda. */
 legend {
-  font-family: var(--font-hand);
-  font-weight: 700;
   padding: 0.15rem var(--space-2);
-  background: var(--color-status-fazer);
-  color: #ffffff;
-  border-radius: var(--radius);
-  transform: rotate(-1.5deg);
+  background: var(--color-tarja);
+  color: var(--color-surface);
+  font-family: var(--font-carimbo);
+  font-size: 0.8125rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
+/* Rótulos como campos de formulário datilografado. */
 fieldset label {
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
   align-self: center;
 }
 
+/* Campos com linha só embaixo: a lacuna a ser preenchida à máquina. */
 fieldset input,
 fieldset select {
   width: 100%;
   min-height: 2.75rem;
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-tarja);
   border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-text);
-  font-family: var(--font-note);
+  font-family: var(--font-texto);
   font-size: 1rem;
 }
 
+fieldset input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+/* Botão como carimbo de borracha: ao pressionar, ele afunda e desalinha um
+   grau, como carimbo batido à mão. */
 fieldset button {
   min-height: 2.75rem;
   min-width: 6rem;
   padding: var(--space-1) var(--space-3);
-  border: 2px solid var(--color-status-fazer);
+  border: 2px solid var(--color-tarja);
   border-radius: var(--radius);
-  background: var(--color-status-fazer);
-  color: #ffffff;
-  font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: 1.0625rem;
+  background: var(--sf704);
+  color: #fdfaf2;
+  font-family: var(--font-carimbo);
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
-  justify-self: start;
+  box-shadow: 3px 3px 0 var(--color-tarja);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+}
+
+fieldset button:hover {
+  background: var(--sf704-texto);
+}
+
+fieldset button:active {
+  transform: translate(3px, 3px) rotate(-0.6deg);
+  box-shadow: 0 0 0 var(--color-tarja);
+}
+
+.acoes-busca {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.botao-secundario {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.botao-secundario:hover {
+  background: rgba(20, 18, 15, 0.08);
+  color: var(--color-text);
 }
 
 /* ==========================================================================
-   Quadro (Grid) e colunas (Flexbox)
+   Região de resultados — o terminal do arquivo
+   ==========================================================================
+   Fica sobre a mesa escura, não sobre papel: por isso é um monitor de fósforo
+   âmbar, e não uma linha de texto. Nenhum ::before ou ::after aqui — conteúdo
+   gerado dentro de uma região aria-live pode ser anunciado junto da mensagem
+   a cada atualização, e o leitor de tela passaria a ler o enfeite também.  */
+
+.regiao-status {
+  margin: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem) 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid #3d3f2c;
+  border-left: 4px solid var(--crt-texto);
+  background: var(--crt-bg);
+  color: var(--crt-texto);
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  min-height: 2.75rem;
+  text-shadow: 0 0 6px rgba(255, 176, 0, 0.35);
+}
+
+/* ==========================================================================
+   Painéis de estado — os avisos do arquivo
+   ========================================================================== */
+
+.painel-estado {
+  max-width: 46rem;
+  margin: var(--space-4) auto;
+  padding: var(--space-4);
+  border: 2px solid var(--color-tarja);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  background-image: var(--xerox);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.painel-estado h2 {
+  margin-bottom: var(--space-2);
+  font-size: 1.25rem;
+}
+
+.painel-estado p {
+  max-width: 48ch;
+  margin-inline: auto;
+  color: var(--color-text-muted);
+}
+
+/* Cada situação com sua tinta: quatro avisos distintos, quatro causas
+   distintas, e a cor ajuda a ler isso antes do texto. */
+.painel-carregando h2 { color: var(--color-status-fazer); }
+.painel-vazio h2 { color: var(--color-status-andamento); }
+.painel-sem-resultados h2 { color: var(--color-status-revisao); }
+.painel-erro h2 { color: var(--sf704-texto); }
+
+/* O erro é o único carimbado: NEGADO, em vermelho, atravessado. É o que o
+   distingue de longe dos dois painéis que não são falha nenhuma. */
+.painel-erro {
+  position: relative;
+  border-color: var(--sf704);
+  border-width: 3px;
+  overflow: hidden;
+}
+
+.painel-erro::after {
+  content: "";
+  position: absolute;
+  right: -0.5rem;
+  bottom: -0.25rem;
+  width: 200px;
+  height: 70px;
+  opacity: 0.55;
+  pointer-events: none;
+  background: var(--carimbo-negado) no-repeat center / contain;
+}
+
+/* Cursor datilográfico piscando enquanto carrega, no lugar do lápis da E3. */
+.painel-carregando h2::after {
+  content: " \2588";
+  color: var(--color-status-fazer);
+  animation: piscando 1s steps(1, end) infinite;
+}
+
+@keyframes piscando {
+  50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   Quadro (Grid) e colunas (Flexbox) — as pastas
    ========================================================================== */
 
 main {
@@ -207,6 +466,8 @@ main {
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  /* Mira, não flecha: a mesa é uma área sob vigilância. */
+  cursor: crosshair;
 }
 
 main section {
@@ -215,34 +476,44 @@ main section {
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-3) var(--space-3);
+  background: var(--color-surface-alt);
+  /* A aba da pasta de papel-manilha, recortada no canto superior direito. */
+  clip-path: polygon(0 0, calc(100% - 1.75rem) 0, 100% 1.75rem, 100% 100%, 0 100%);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* Uma tinta de carimbo por etapa. */
 .afazer      { --status-color: var(--color-status-fazer); }
 .emandamento { --status-color: var(--color-status-andamento); }
 .emrevisao   { --status-color: var(--color-status-revisao); }
 .concluidas  { --status-color: var(--color-status-concluida); }
 
-/* fita adesiva prendendo a coluna, como num mural */
+/* Faixa de etiqueta no topo da pasta. */
 main section::before {
   content: "";
   position: absolute;
-  top: -0.6rem;
-  left: var(--space-3);
-  width: 3.5rem;
-  height: 1.15rem;
+  inset: 0 0 auto 0;
+  height: 6px;
   background: var(--status-color);
-  opacity: 0.85;
-  transform: rotate(-3deg);
-  border-radius: 2px;
 }
 
+/* Título da coluna como carimbo torto sobre a pasta: caixa alta, moldura
+   dupla e um grau de desalinho, como carimbo batido à mão. A rotação é do
+   carimbo, não do cartão — a leitura das colunas continua alinhada. */
 main section h2 {
+  align-self: flex-start;
+  padding: 0.2rem var(--space-2);
+  border: 2px solid var(--status-color);
+  box-shadow: inset 0 0 0 1px var(--color-surface-alt), inset 0 0 0 3px var(--status-color);
   color: var(--status-color);
-  transform: rotate(-0.5deg);
+  transform: rotate(-1.2deg);
+  transition: transform 0.15s ease;
+}
+
+/* O carimbo se endireita quando o ponteiro entra na pasta. */
+main section:hover h2 {
+  transform: rotate(0deg) scale(1.02);
 }
 
 main section ul {
@@ -256,69 +527,92 @@ main section li {
   min-width: 0;
 }
 
+.contador {
+  font-family: var(--font-texto);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-text-muted);
+}
+
 /* ==========================================================================
-   Cartão de tarefa — folha de caderno arrancada
-   ========================================================================== */
+   Cartão de tarefa — a fotocópia grampeada na pasta
+   ==========================================================================
+   Cada tarefa é uma folha fotocopiada: papel claro sobre a pasta, dois furos
+   de arquivo na margem esquerda, textura de xerox por cima e sombra dura,
+   como folha apoiada.                                                       */
 
 article {
   position: relative;
-  z-index: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   min-width: 0;
   height: 100%;
-  background: var(--color-surface);
+  padding: var(--space-3);
+  padding-left: calc(var(--space-3) + 1.4rem);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: var(--space-3);
-  box-shadow: 0 2px 6px rgba(42, 47, 58, 0.12);
-  transform: rotate(var(--tilt, -0.5deg));
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  /* três camadas: ruído de cópia + os dois furos de arquivo */
+  background-image:
+    var(--xerox),
+    radial-gradient(circle 5px at 0.95rem 1.6rem, var(--color-surface-alt) 5px, transparent 5px),
+    radial-gradient(circle 5px at 0.95rem 3.6rem, var(--color-surface-alt) 5px, transparent 5px);
+  box-shadow: 3px 3px 0 rgba(20, 18, 15, 0.22);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-main section li:nth-child(even) article {
-  --tilt: 0.5deg;
+/* Etiqueta da etapa na borda de cima, na tinta da coluna. */
+article::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--status-color);
 }
 
+/* A folha se levanta da pasta quando o ponteiro chega. */
 article:hover,
 article:focus-within {
-  transform: rotate(0deg);
-  box-shadow: 0 6px 14px rgba(42, 47, 58, 0.18);
+  transform: translate(-2px, -3px);
+  box-shadow: 7px 8px 0 rgba(20, 18, 15, 0.28);
 }
 
-/* folha "de baixo" da pilha, para dar volume de papel */
+/* Carimbo CONSULTADO, que aparece ao passar o ponteiro: o arquivo registra
+   quem abriu a pasta. É imagem (SVG embutido), não texto — não há o que um
+   leitor de tela anuncie, e `pointer-events: none` garante que o carimbo
+   nunca roube um clique do botão que fica embaixo dele. */
 article::after {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  transform: rotate(-1.4deg);
+  right: -0.35rem;
+  bottom: 1.1rem;
+  width: 165px;
+  height: 54px;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--carimbo-visto) no-repeat center / contain;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  transform: rotate(4deg) scale(0.96);
 }
 
-/* clipe de papel decorativo no canto do cartão */
-article::before {
-  content: "\1F4CE";
-  position: absolute;
-  top: -0.6rem;
-  right: 0.6rem;
-  font-size: 1.15rem;
-  transform: rotate(12deg);
-  pointer-events: none;
+article:hover::after,
+article:focus-within::after {
+  opacity: 0.5;
+  transform: rotate(0deg) scale(1);
 }
 
 article h3 {
-  font-family: var(--font-hand);
-  font-weight: 700;
+  font-family: var(--font-carimbo);
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
   min-width: 0;
-  font-size: 1.125rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-image: linear-gradient(to bottom, transparent 72%, #fde68a99 72%);
+  /* Sem nowrap nem reticências: o título é justamente o campo que a busca
+     desta entrega procura, e esconder metade dele esconderia o resultado. */
+  overflow-wrap: anywhere;
 }
 
 article dl {
@@ -326,87 +620,253 @@ article dl {
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  gap: var(--space-1);
+  gap: 0.1rem;
 }
 
 article dt {
-  font-size: 0.875rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
 article dd {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   overflow-wrap: anywhere;
 }
 
-/* prazo com um alfinete, marcando a página */
-article dt:nth-of-type(3)::before {
-  content: "\1F4CC ";
+article dd + dt {
+  margin-top: var(--space-1);
 }
 
-/* prioridade logo abaixo do título, como um selo circulado à caneta */
+/* --------------------------------------------------------------------------
+   A TARJA
+   --------------------------------------------------------------------------
+   O nome do responsável entra sanitizado, coberto pelo retângulo preto da
+   censura, e é liberado quando o ponteiro passa pelo cartão.
+
+   Três cuidados que fazem disso um efeito, e não uma barreira:
+
+     - só existe onde há mouse de verdade (`hover: hover` e `pointer: fine`).
+       Em tela de toque, onde não há como "passar por cima", o nome aparece
+       normalmente desde o início;
+     - `:focus-within` libera a tarja também pelo teclado, porque o cartão
+       tem um botão focável — quem navega com Tab não fica de fora;
+     - o texto continua no documento, apenas coberto. Leitor de tela lê o
+       nome sempre; a tarja é pintura por cima, não remoção de conteúdo.   */
+
+@media (hover: hover) and (pointer: fine) {
+  article dd:nth-of-type(2) {
+    position: relative;
+    color: transparent;
+    cursor: zoom-in;
+    transition: color 0.18s ease;
+  }
+
+  article dd:nth-of-type(2)::after {
+    content: "";
+    position: absolute;
+    inset: -1px -3px;
+    background: var(--color-tarja);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  article:hover dd:nth-of-type(2),
+  article:focus-within dd:nth-of-type(2) {
+    color: var(--color-text);
+    cursor: default;
+  }
+
+  article:hover dd:nth-of-type(2)::after,
+  article:focus-within dd:nth-of-type(2)::after {
+    opacity: 0;
+    transform: translateX(0.4rem) skewX(-8deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Prioridade = nível de classificação
+   --------------------------------------------------------------------------
+   O código de cor é o dos cover sheets americanos: laranja para TOP SECRET
+   (SF 703), vermelho para SECRET (SF 704) e azul para CONFIDENTIAL (SF 705).
+   A faixa larga à esquerda usa a cor pura, como no formulário; o texto usa a
+   variante escurecida, porque o laranja puro não tem contraste de leitura.  */
+
 article dt:nth-of-type(4),
 article dd:nth-of-type(4) {
   order: -1;
 }
 
+/* O rótulo "Prioridade" sai da tela e continua no documento: ao lado de uma
+   etiqueta que já diz "ALTA" em caixa alta ele é ruído visual, mas o leitor
+   de tela precisa dele para saber o que aquele valor significa. */
 article dt:nth-of-type(4) {
-  font-size: 0.75rem;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 article dd:nth-of-type(4) {
-  display: inline-flex;
   align-self: flex-start;
   padding: 0.1rem var(--space-2);
   border: 2px solid currentColor;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  font-family: var(--font-hand);
-  font-weight: 700;
+  border-left-width: 0.65rem;
+  font-family: var(--font-carimbo);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-.prioridade-alta  { color: var(--pen-alta); }
-.prioridade-media { color: var(--pen-media); }
-.prioridade-baixa { color: var(--pen-baixa); }
+article dd.prioridade-alta  { color: var(--pen-alta);  border-left-color: var(--sf703); }
+article dd.prioridade-media { color: var(--pen-media); border-left-color: var(--sf704); }
+article dd.prioridade-baixa { color: var(--pen-baixa); border-left-color: var(--sf705); }
 
-/* prazo fixado na base do cartão */
+/* Prazo no pé da folha, atrás de uma linha pontilhada de formulário. */
 article dt:nth-of-type(3) {
   margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+}
+
+/* Ação do cartão: pedido de requisição datilografado. */
+.acao-cartao {
+  align-self: flex-start;
+  min-height: 2.25rem;
+  padding: 0.1rem var(--space-2);
+  border: 1px dashed var(--color-text-muted);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-texto);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-style 0.15s ease;
+}
+
+.acao-cartao:hover {
+  border-style: solid;
+  background: var(--color-tarja);
+  color: var(--color-surface);
 }
 
 /* ==========================================================================
-   Rodapé
+   Coluna vazia
+   ==========================================================================
+   Em CSS puro, para não misturar essa decoração com a lógica das cinco telas
+   que vive no JavaScript.                                                   */
+
+main section ul:empty::after {
+  content: "Sem registros nesta pasta.";
+  display: block;
+  padding: var(--space-3);
+  border: 1px dashed var(--color-text-muted);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ==========================================================================
+   Rodapé — o pé do documento
    ========================================================================== */
 
 footer {
-  padding: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
+  padding: var(--space-4) 0 0;
+  background: var(--color-surface);
+  background-image: var(--xerox);
+  border-top: 2px solid var(--color-tarja);
   color: var(--color-text-muted);
 }
 
+footer h2,
+footer > p {
+  margin-inline: clamp(1rem, 0.5rem + 3vw, 3rem);
+}
+
 footer h2 {
-  font-size: 1.05rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  letter-spacing: 0.12em;
+}
+
+footer > p {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Bloco de autoridade de classificação: no documento real, é aqui que se
+   registra de onde a classificação foi derivada e quando ela cai. */
+.bloco-autoridade {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+/* Selo de liberação, no formato que o acervo CREST estampa nas cópias
+   liberadas por FOIA. */
+.selo-liberacao {
+  margin: var(--space-3) clamp(1rem, 0.5rem + 3vw, 3rem);
+  display: inline-block;
+  padding: 0.2rem var(--space-2);
+  border: 2px solid var(--sf704);
+  color: var(--sf704-texto);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+}
+
+/* A banner line do pé fecha o documento, e encosta na borda da folha. */
+footer .faixa-classificacao {
+  margin-top: var(--space-3);
 }
 
 /* ==========================================================================
    Acessibilidade — foco visível
-   ========================================================================== */
+   ==========================================================================
+   O anel é âmbar sobre a mesa escura e preto sobre papel, para nunca depender
+   de uma única cor de fundo. Nada do tema — nem a tarja, nem os carimbos, nem
+   a lanterna — interfere no foco: a lanterna tem `pointer-events: none` e os
+   carimbos são imagens de fundo.                                            */
 
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--color-status-fazer);
+  outline: 3px solid var(--color-tarja);
   outline-offset: 2px;
+}
+
+.acao-cartao:focus-visible {
+  outline-color: var(--sf704);
+}
+
+/* `hidden` sozinho não vence o `display: grid` de main; esta regra garante
+   que o quadro realmente suma nas telas que não são de sucesso. */
+main[hidden],
+.painel-estado[hidden] {
+  display: none;
 }
 
 /* ==========================================================================
    Breakpoints (mobile-first, min-width)
    ========================================================================== */
 
-/* 30rem (480px): a busca já tem largura suficiente para colocar cada rótulo
-   ao lado do seu campo, em vez de empilhado, sem espremer os campos */
+/* 30rem (480px): o formulário já tem largura para pôr cada rótulo ao lado do
+   seu campo, em vez de empilhado, sem espremer os campos */
 @media (min-width: 30rem) {
   fieldset {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
 
@@ -415,167 +875,41 @@ select:focus-visible {
   }
 }
 
-/* 40rem (640px): há espaço para duas colunas de status lado a lado sem que
-   os cartões fiquem estreitos demais e o texto passe a quebrar mal */
+/* 40rem (640px): há espaço para duas pastas lado a lado sem que os cartões
+   fiquem estreitos demais e o texto passe a quebrar mal */
 @media (min-width: 40rem) {
   main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* 64rem (1024px): a tela é larga o bastante para as quatro colunas de
-   status lado a lado sem apertar o conteúdo dos cartões */
+/* 64rem (1024px): a tela é larga o bastante para as quatro pastas lado a
+   lado sem apertar o conteúdo dos cartões */
 @media (min-width: 64rem) {
   main {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-/* ==========================================================================
-   Contador de tarefas por coluna
-   ========================================================================== */
 
-.contador {
-  font-family: var(--font-note);
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-}
 /* ==========================================================================
    Movimento reduzido
-   ========================================================================== */
+   ==========================================================================
+   Quem pediu menos movimento perde as transições e o cursor piscando. A
+   lanterna não precisa ser desligada aqui: `js/efeitos.js` nem chega a
+   instalar o ouvinte quando a preferência está ativa.                       */
 
 @media (prefers-reduced-motion: reduce) {
-  article {
+  article,
+  article::after,
+  main section h2,
+  fieldset button,
+  .acao-cartao,
+  article dd:nth-of-type(2),
+  article dd:nth-of-type(2)::after {
     transition: none;
   }
-}
 
-/* ==========================================================================
-   E3 — região viva e os quatro estados da tela
-   ========================================================================== */
-
-/* Região anunciada a leitores de tela. Fica visível também para quem enxerga:
-   é onde aparece a contagem de tarefas no estado de sucesso. */
-.regiao-status {
-  padding: 0 clamp(1rem, 0.5rem + 3vw, 3rem);
-  margin-top: var(--space-3);
-  color: var(--color-text-muted);
-  font-size: 0.9375rem;
-  min-height: 1.5rem;
-}
-
-/* Painel de carregando, vazio e erro. */
-.painel-estado {
-  margin: var(--space-4) clamp(1rem, 0.5rem + 3vw, 3rem);
-  padding: var(--space-4);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  text-align: center;
-}
-
-.painel-estado h2 {
-  margin-bottom: var(--space-2);
-  transform: rotate(-0.5deg);
-}
-
-.painel-estado p {
-  max-width: 44ch;
-  margin-inline: auto;
-  color: var(--color-text-muted);
-}
-
-/* Cada estado com sua cor, para que as telas sejam mesmo distintas. */
-.painel-carregando h2 { color: var(--color-status-fazer); }
-.painel-vazio      h2 { color: var(--color-status-andamento); }
-.painel-erro       h2 { color: var(--pen-alta); }
-
-.painel-erro {
-  border-color: var(--pen-alta);
-  border-style: solid;
-}
-
-/* Lápis girando enquanto carrega. */
-.painel-carregando h2::after {
-  content: " \270E";
-  display: inline-block;
-  animation: girando 1.2s linear infinite;
-}
-
-@keyframes girando {
-  to { transform: rotate(360deg); }
-}
-
-/* `hidden` sozinho não vence o `display: grid` de main; esta regra garante
-   que o quadro realmente suma nos estados que não são de sucesso. */
-main[hidden],
-.painel-estado[hidden] {
-  display: none;
-}
-
-/* Coluna sem nenhum cartão — em CSS puro, para não misturar essa decoração
-   com a lógica dos quatro estados que vive no JavaScript. */
-main section ul:empty::after {
-  content: "Sem tarefas nesta coluna.";
-  display: block;
-  padding: var(--space-3);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text-muted);
-  font-size: 0.9375rem;
-  text-align: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
   .painel-carregando h2::after {
     animation: none;
   }
-}
-
-/* ==========================================================================
-   E4 — controles em funcionamento
-   ========================================================================== */
-
-/* Os dois botões da busca dividem uma linha só. `flex-wrap` é o que mantém a
-   promessa da E2 em 320px: em vez de estourar a largura, o segundo botão
-   desce para a linha de baixo, e a página nunca rola na horizontal. */
-.acoes-busca {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* "Limpar filtros" é uma ação secundária: mesmo tamanho de alvo de toque do
-   botão principal, peso visual menor, para não competir com ele. */
-.botao-secundario {
-  border-color: var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
-/* Ação dentro do cartão. Discreta, porque o conteúdo da tarefa é que importa;
-   com 2.25rem de altura mínima, ainda é confortável de acertar no toque. */
-.acao-cartao {
-  align-self: flex-start;
-  min-height: 2.25rem;
-  padding: 0.15rem var(--space-2);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-family: var(--font-note);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.acao-cartao:hover {
-  border-style: solid;
-  color: var(--color-text);
-}
-
-/* O painel de resultado vazio precisa parecer diferente do painel de erro e
-   do painel de origem vazia — são três telas distintas, com três causas
-   distintas, e a cor ajuda a ler isso antes do texto. */
-.painel-sem-resultados h2 {
-  color: var(--color-status-revisao);
 }
