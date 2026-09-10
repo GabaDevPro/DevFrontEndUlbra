@@ -200,6 +200,53 @@ tratando o formulário, e o `submit` é impedido com `preventDefault()`. Assim a
 tecla Enter no campo de busca também funciona sem recarregar a página. A busca
 em si é ao vivo, no evento `input` — o botão é uma confirmação, não a origem.
 
+## Identidade visual
+
+A estética é a da universidade antiga: pergaminho, tinta ferro-gálica, filete
+de ouro e rubricação. Três regras organizam o `styles.css`:
+
+1. **Pergaminho e tinta.** Nunca preto puro sobre branco puro. O fundo tem o
+   tom do pergaminho (`#efe3ca`) e o texto é um marrom muito escuro
+   (`#2a2018`) — o par que o olho lê em livro impresso, e que fica em 12,5:1
+   de contraste.
+2. **Ouro é ornamento, nunca texto.** Molduras, filetes e florões usam
+   dourado; nenhuma informação depende dele, porque dourado sobre pergaminho
+   não alcança o contraste de leitura.
+3. **Rubricação.** No manuscrito medieval o vermelho marca o que importa:
+   aqui, a capitular de cada tarefa e a etiqueta de prioridade. Cor é
+   hierarquia, não enfeite.
+
+| Elemento | Tratamento |
+|---|---|
+| Títulos e etiquetas | **Cinzel** — capitais inscricionais romanas, a letra da pedra fundacional |
+| Texto corrido | **EB Garamond** — o desenho renascentista do livro |
+| Título maior e capitulares | **Cinzel Decorative** |
+| Cabeçalho | Frontispício: filete de ouro no topo, moldura de dois traços, subtítulo em versaletes |
+| Busca e filtros | Cartela de borda dupla, legenda como faixa de selo em vermelhão |
+| Colunas | Uma cor por "faculdade", em cabeceira tingida e barra no título |
+| Cartões | Fólio de códice: moldura de dois filetes e **capitular rubricada** (`h3::first-letter`, CSS puro — nenhuma marcação a mais) |
+| Rodapé | Cólofon, com florão acima do nome |
+| Carregando | Florão girando no lugar do lápis da E3 |
+
+Três coisas da E2 saíram de cena, e não foi só por gosto:
+
+- **as rotações dos cartões** desalinhavam a leitura das quatro colunas;
+- **`white-space: nowrap` com reticências no título** escondia justamente o
+  dado pelo qual a busca desta entrega procura — agora o título quebra em
+  duas linhas;
+- **o emoji decorativo** (clipe e alfinete) era conteúdo gerado que alguns
+  leitores de tela anunciam. Todo ornamento agora é `background-image` com
+  um SVG embutido, ou borda — nada que possa ser lido em voz alta.
+
+O modo escuro é automático (`prefers-color-scheme`): a mesma biblioteca à luz
+de vela. Só os tokens de cor mudam, nenhuma regra de layout é reescrita — é o
+que prova que a paleta estava mesmo centralizada.
+
+Os 24 pares de cor que carregam informação foram conferidos nos dois modos, e
+todos passam o mínimo AA (texto ≥ 4,5:1; elementos gráficos e títulos de
+coluna ≥ 3:1). O anel de foco é de tinta no modo claro e de ouro no escuro,
+sempre com 2px de afastamento.
+
 ## Publicação
 
 Publicado pelo **GitHub Pages**, a partir da branch padrão (`main`) e da pasta
