@@ -20,8 +20,8 @@
                 <fieldset>
                     <legend>Busca e filtros</legend>
 
-                    <label for="busca">Buscar</label>
-                    <input type="text" name="busca" id="busca" placeholder="Título, projeto ou responsável" autocomplete="off">
+                    <label for="busca">Buscar por título</label>
+                    <input type="text" name="busca" id="busca" placeholder="Parte do título da tarefa" autocomplete="off">
 
                     <label for="stts">Filtro por status</label>
                     <select name="status" id="stts">
@@ -40,7 +40,21 @@
                         <option value="alta">Alta</option>
                     </select>
 
-                    <button type="button">Buscar</button>
+                    <label for="ordem">Ordenação por prazo</label>
+                    <select name="ordenacao" id="ordem">
+                        <option value="prazo-asc">Prazo mais próximo primeiro</option>
+                        <option value="prazo-desc">Prazo mais distante primeiro</option>
+                    </select>
+
+                    <!-- "Buscar" é type="submit" porque agora existe JavaScript
+                         tratando o formulário: o submit é impedido e apenas manda
+                         redesenhar. Assim a tecla Enter no campo de busca também
+                         funciona, sem recarregar a página. A busca em si é ao vivo,
+                         no evento input — o botão é uma confirmação, não a origem. -->
+                    <div class="acoes-busca">
+                        <button type="submit">Buscar</button>
+                        <button type="button" id="limpar" class="botao-secundario">Limpar filtros</button>
+                    </div>
                 </fieldset>
             </form>
         </search>
