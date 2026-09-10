@@ -1,0 +1,24 @@
+# Desenvolvimento Front-End — ULBRA
+
+Repositório das entregas individuais da disciplina.
+Gabriel Rodrigues Costa Ferreira.
+
+## Aplicação publicada
+
+**<https://gabadevpro.github.io/DevFrontEndUlbra/>**
+
+Publicada pelo GitHub Pages, a partir da branch `main` e da pasta raiz (`/`).
+A aplicação vive em [`to-do-List/`](to-do-List/); o `index.html` da raiz
+apenas redireciona para lá, para que a URL curta acima abra o quadro.
+
+## Entregas
+
+| Etapa | O que foi feito |
+|---|---|
+| E1 | Estrutura semântica do quadro e os controles de busca e filtro na tela. |
+| E2 | Layout responsivo com Grid e Flexbox, sistema de design em CSS e os cartões desenhados por JavaScript. |
+| E3 | Os dados saem do JavaScript e passam a vir de `dados.json` por `fetch`, com os estados de carregando, sucesso, erro e vazio. |
+| E4 | Estado único da aplicação: busca, filtros, ordenação e "Limpar filtros" funcionando, e a aplicação publicada. |
+
+A documentação de cada decisão está em
+[`to-do-List/README.md`](to-do-List/README.md).
