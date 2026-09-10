@@ -13,27 +13,107 @@
     <meta http-equiv="refresh" content="0; url=to-do-List/">
     <link rel="canonical" href="to-do-List/">
 
+    <!-- Estilo embutido, e curto: esta página existe por meio segundo, e
+         qualquer arquivo externo aqui seria uma requisição a mais para
+         atrasar o redirecionamento. Por isso também não há fonte remota:
+         Courier já está instalada em qualquer sistema. -->
     <style>
+        :root {
+            --mesa: #23211d;
+            --papel: #f3f0e7;
+            --tinta: #1b1917;
+            --tarja: #14120f;
+            --carimbo: #b3261e;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
             display: grid;
             place-items: center;
-            gap: 1rem;
-            font-family: system-ui, sans-serif;
-            background: #f6efe0;
-            color: #2a2f3a;
-            text-align: center;
+            padding: 1.5rem;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.0625rem;
+            background-color: var(--mesa);
+            background-image: radial-gradient(ellipse at 50% 30%, rgba(120, 108, 84, 0.16), transparent 62%);
+            color: var(--tinta);
         }
-        main { padding: 2rem; }
-        a { color: #1e40af; }
+
+        main {
+            max-width: 34rem;
+            background: var(--papel);
+            border: 1px solid #a8977a;
+            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        .faixa {
+            margin: 0;
+            padding: 0.35rem 1rem;
+            background: var(--tarja);
+            color: var(--papel);
+            font-size: 0.75rem;
+            letter-spacing: 0.22em;
+            text-align: center;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        .miolo { padding: 1.75rem 1.5rem; }
+
+        h1 {
+            margin: 0 0 0.75rem;
+            font-size: clamp(1.5rem, 1.1rem + 2vw, 2.25rem);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        p { margin: 0.5rem 0; }
+
+        .controle {
+            color: #4c473f;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.35rem 0.75rem;
+            border: 2px solid var(--tarja);
+            background: var(--carimbo);
+            color: #fdfaf2;
+            font-size: 0.8125rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 3px 3px 0 var(--tarja);
+        }
+
+        a:hover { background: #97170f; }
+
+        a:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0 0 0 var(--tarja);
+        }
+
+        a:focus-visible {
+            outline: 3px solid var(--tarja);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>
     <main>
-        <h1>Quadro de Tarefas</h1>
-        <p>Redirecionando para a aplicação…</p>
-        <p><a href="to-do-List/">Abrir o quadro de tarefas</a></p>
+        <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
+
+        <div class="miolo">
+            <h1>Quadro de Tarefas</h1>
+            <p class="controle">Doc. n.º 51-E4 &middot; transferindo para o arquivo&hellip;</p>
+            <p><a href="to-do-List/">Abrir o dossiê</a></p>
+        </div>
+
+        <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
     </main>
 </body>
 </html>
