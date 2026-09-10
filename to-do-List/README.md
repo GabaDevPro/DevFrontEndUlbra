@@ -37,6 +37,7 @@ python -m http.server 5500     # depois abra http://localhost:5500
 | `js/estados.js` | `renderizarEstado(situacao, dados)` — decide qual das cinco telas aparece. Não faz requisição, não filtra. |
 | `js/renderizacao.js` | `renderizarTarefas(array)` — desenha os cartões, na ordem em que recebeu. |
 | `js/main.js` | `atualizar()`, o ciclo único, e a inicialização. Único com `try/catch`. |
+| `js/efeitos.js` | Efeitos de ponteiro (a lanterna). **Fora do ciclo de dados**: não importa nada, não é importado por ninguém e só escreve duas propriedades de CSS. |
 | `js/dados.js` | Array antigo da E2. **Aposentado**, não é importado por ninguém. |
 | `testes/` | Arquivos para reproduzir os estados de origem vazia e de erro de formato. |
 | `../index.html` | Página na raiz do repositório, que redireciona para esta pasta no GitHub Pages. |
@@ -199,6 +200,70 @@ O botão "Buscar" voltou a ser `type="submit"`: agora existe JavaScript
 tratando o formulário, e o `submit` é impedido com `preventDefault()`. Assim a
 tecla Enter no campo de busca também funciona sem recarregar a página. A busca
 em si é ao vivo, no evento `input` — o botão é uma confirmação, não a origem.
+
+## Identidade visual
+
+A estética imita um documento classificado liberado por FOIA — o tipo de
+papel que a CIA publica no acervo CREST. As convenções não são inventadas:
+
+| Convenção | Como aparece aqui | Referência |
+|---|---|---|
+| **Banner line** — a classificação mais alta do documento é repetida no cabeçalho **e** no pé de cada página | as duas faixas pretas, no topo e no fim | [ISOO, *Marking Classified National Security Information*](https://www.archives.gov/files/isoo/training/marking-booklet-revision.pdf) |
+| **Código de cor dos cover sheets** — laranja SF 703 = TOP SECRET, vermelho SF 704 = SECRET, azul SF 705 = CONFIDENTIAL | a faixa larga na etiqueta de prioridade: alta, média e baixa recebem essas três cores | [32 CFR 2001.80](https://www.ecfr.gov/current/title-32/subtitle-B/chapter-XX/part-2001/subpart-H/section-2001.80) |
+| **Bloco de autoridade de classificação** — "Derived From" e "Declassify On", no pé | o bloco acima da faixa final | [CDSE, *Marking Classified Information*](https://www.cdse.edu/Portals/124/Documents/jobaids/information/Marking_Classified_Information.pdf) |
+| **Selo de liberação** — "Approved For Release", data e número de controle | o carimbo torto no rodapé | [MuckRock, guia do CREST](https://www.muckrock.com/news/archives/2017/sep/22/crest-search-guide/) |
+| **Placa do perímetro** — fotografia proibida por 18 U.S.C. 795, uso de força letal autorizado | a tarja vermelha sob o título | [Area 51](https://en.wikipedia.org/wiki/Area_51), [Dreamland Resort](https://www.dreamlandresort.com/area51/drones.html) |
+| **Tarja de sanitização** — o retângulo preto sobre o trecho suprimido | cobre o responsável de cada cartão | idem |
+
+Três suportes se empilham: a **mesa escura**, a **pasta de papel-manilha** (as
+colunas, com a aba recortada no canto) e a **fotocópia** (os cartões, com dois
+furos de arquivo e textura de xerox). O texto vive sempre na fotocópia ou na
+pasta, nunca na mesa — é isso que mantém o contraste alto apesar do fundo
+escuro. Tipografia: **Special Elite** nos carimbos e títulos, **Courier
+Prime** no texto datilografado.
+
+Os 27 pares de cor que carregam informação foram conferidos nos dois modos de
+cor, e todos passam o mínimo AA. Dois precisaram de ajuste: o laranja do
+SF 703 ficava em 2,94:1 como faixa e foi escurecido para 3,18:1, e a pasta do
+modo escuro foi clareada até a tinta fraca voltar a 5,06:1.
+
+### Interação com o mouse
+
+| Onde | O que acontece |
+|---|---|
+| Cartão | a folha se levanta da pasta, e o carimbo **CONSULTADO** aparece atravessado no canto |
+| Nome do responsável | a **tarja de censura** desliza e libera o nome |
+| Título da coluna | o carimbo torto se endireita quando o ponteiro entra na pasta |
+| Botões | afundam três pixels e desalinham um grau, como carimbo batido à mão |
+| Página inteira | um facho de **lanterna** segue o ponteiro sobre a mesa |
+| Quadro | o cursor é uma **mira**, não uma flecha |
+
+Só o facho de lanterna precisa de JavaScript, e ele mora em
+[`js/efeitos.js`](js/efeitos.js) — **fora do ciclo de dados**, de propósito:
+
+- não importa nada e não é importado por `main.js`; é um segundo ponto de
+  entrada, declarado à parte no `index.html`;
+- não lê nem escreve o estado, não deriva lista, não cria nem remove cartão;
+- a única coisa que ele toca são duas propriedades personalizadas de CSS
+  (`--ponteiro-x` e `--ponteiro-y`) no elemento raiz.
+
+A posição do mouse é informação de apresentação, não estado da aplicação.
+Guardá-la no objeto de estado forçaria uma renderização a cada pixel de
+movimento — redesenhar a tela inteira por um dado que nenhum cartão, contagem
+ou mensagem usa para nada.
+
+O efeito ainda respeita três limites: só é instalado quando existe mouse de
+verdade (`hover: hover` e `pointer: fine`), nunca quando `prefers-reduced-motion`
+está ativo, e a camada do facho tem `pointer-events: none` — sem isso, uma
+camada por cima da tela inteira roubaria todo clique da página.
+
+A tarja e o carimbo têm o mesmo cuidado: onde não há mouse, o nome do
+responsável aparece desde o início; o teclado libera a tarja por
+`:focus-within`, já que o cartão tem um botão focável; e o texto continua no
+documento, apenas coberto — leitor de tela lê o nome sempre. Todo o cenário
+do dossiê (as faixas, a linha de controle, a placa, o bloco de autoridade e o
+selo) é `aria-hidden="true"`: quem usa leitor de tela não tem nada a ganhar
+ouvindo "TOP SECRET // GROOM LAKE // NOFORN" antes do título da página.
 
 ## Publicação
 
