@@ -225,6 +225,64 @@ chama `atualizar()`. O `<select>` de prioridade se ajusta sozinho no mesmo
 ciclo — o que é uma boa demonstração de que os controles são projeção do
 estado, e não a origem dele.
 
+## Carrossel das colunas no mobile
+
+Abaixo de **40rem** as quatro pastas ficam empilhadas, e a página virava uma
+coluna longuíssima: com dez cartões, chegar da primeira pasta ao rodapé exigia
+várias telas de rolagem. Cada pasta passou a mostrar **um cartão por vez**, com
+os demais ao lado, alcançáveis arrastando na horizontal. A partir de 40rem, com
+as pastas lado a lado, a pilha vertical volta.
+
+### É só CSS, e isso é o ponto
+
+Não há uma linha de JavaScript no carrossel — `scroll-snap` nativo sobre um
+contêiner com `overflow-x: auto`. A escolha não é economia; é o que o mantém
+compatível com as regras da entrega:
+
+- **Nada para religar depois de `replaceChildren()`.** A rolagem é propriedade
+  da trilha (`<ul>`), que nunca é substituída, e não dos cartões, que entram e
+  saem a cada desenho.
+- **Nenhum ouvinte percorre cartões** para mostrar um e esconder os outros —
+  justamente o que o enunciado proíbe. Todos os cartões estão visíveis ao mesmo
+  tempo; o que muda é qual pedaço da trilha está à vista.
+- **Todos continuam no documento e na ordem de leitura.** Quem usa leitor de
+  tela encontra os dez, não só o que está na área visível.
+- **O Tab continua funcionando sozinho.** O botão de cada cartão é um ponto de
+  parada, e o navegador rola a trilha até ele sem código nenhum.
+
+"Arrastar" aqui é o gesto de rolagem nativo do navegador, não o *drag and drop*
+de cartões que a entrega exclui: nenhum cartão muda de coluna, de posição ou de
+dado. A ordem continua sendo decidida em `derivar.js`; a trilha só a exibe.
+
+### A afordância, sem seta nem bolinha
+
+Cada cartão ocupa **87%** da trilha. A fatia do próximo espiando na borda é o
+que avisa que há mais ali dentro — e quantos são, o contador ao lado do título
+da pasta já diz (`EM ANDAMENTO (3)`). Setas e indicadores exigiriam JavaScript
+com um ouvinte de rolagem marcando qual cartão está ativo, o que seria
+exatamente o tipo de código que percorre cartões.
+
+### O único ajuste que o JavaScript precisou
+
+`replaceChildren()` troca os cartões e, junto com eles, zera a posição de
+rolagem da trilha. Se o foco estava no botão de um cartão que agora é o
+terceiro da fila, `devolverFoco()` o devolveria para **fora da área visível** —
+o teclado num lugar e o olho em outro.
+
+Por isso `main.js` passou a rolar a trilha até o cartão focado. Só a trilha:
+mexer em `scrollLeft` de um elemento não toca na rolagem da página, e é por
+isso que ali não serve `scrollIntoView()`, que ajustaria todos os ancestrais.
+Isso não move o foco — move a janela por onde se olha para ele. Fora do
+carrossel, a conta dá zero e nada acontece.
+
+### A garantia da E2 continua de pé
+
+A trilha rola; **a página não**. Medido com o Chrome a 320px:
+`documentElement.scrollWidth` é 320 e `clientWidth` é 320 — sem rolagem
+horizontal no documento. E `overscroll-behavior-x: contain` faz o gesto morrer
+na trilha: continuar arrastando depois do último cartão não empurra a página
+de lado.
+
 ## Como reproduzir cada situação
 
 Troque a constante `CAMINHO_DOS_DADOS`, no topo de `js/main.js`:
