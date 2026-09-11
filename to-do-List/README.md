@@ -36,6 +36,7 @@ python -m http.server 5500     # depois abra http://localhost:5500
 | `js/controles.js` | Os ouvintes (instalados uma vez) e a sincronização dos campos a partir do estado. |
 | `js/estados.js` | `renderizarEstado(situacao, dados)` — decide qual das cinco telas aparece. Não faz requisição, não filtra. |
 | `js/renderizacao.js` | `renderizarTarefas(array)` — desenha os cartões, na ordem em que recebeu. |
+| `js/url.js` | **Desafio opcional.** Lê os critérios da barra de endereço (uma vez, na inicialização) e os escreve de volta a cada ciclo. |
 | `js/main.js` | `atualizar()`, o ciclo único, e a inicialização. Único com `try/catch`. |
 | `js/efeitos.js` | Efeitos de ponteiro (a lanterna). **Fora do ciclo de dados**: não importa nada, não é importado por ninguém e só escreve duas propriedades de CSS. |
 | `js/dados.js` | Array antigo da E2. **Aposentado**, não é importado por ninguém. |
@@ -85,6 +86,7 @@ export function atualizar() {
   });
 
   sincronizarControles(estado);                  // e os campos do formulário
+  sincronizarURL(estado);                        // e a barra de endereço
 }
 ```
 
@@ -95,7 +97,79 @@ exatamente como a tela passa a mostrar três cartões e escrever "4 de 10".
 Os campos são sincronizados **aqui**, não dentro dos ouvintes. É por isso que
 "Limpar filtros" precisa apenas devolver o estado aos valores iniciais: os
 campos e os cartões voltam juntos, no mesmo ciclo, sem que o botão saiba o que
-é um campo.
+é um campo. A barra de endereço entrou na mesma lista, pelo mesmo motivo.
+
+## Critérios na URL (desafio opcional)
+
+Feito depois de todos os itens mínimos, e sem mexer em nenhum deles: nem
+`derivar.js`, nem `renderizacao.js`, nem `estados.js` foram alterados.
+
+O endereço acompanha a visão. Filtrar por prioridade alta e ordenar pelo prazo
+mais distante deixa a barra assim:
+
+```
+https://gabadevpro.github.io/DevFrontEndUlbra/to-do-List/?prioridade=alta&ordenacao=prazo-desc
+```
+
+Copiar esse endereço e abri-lo em outra janela reabre exatamente o mesmo
+quadro, com os campos do formulário já preenchidos.
+
+### O estado continua sendo a verdade
+
+A URL é uma **segunda forma de entrada**, e é aí que mora o risco de a entrega
+ganhar duas fontes de verdade. A regra adotada:
+
+| | |
+|---|---|
+| **Leitura** | URL → estado, **uma vez só**, na primeira linha de `iniciar()`, antes dos ouvintes e do primeiro desenho. |
+| **Escrita** | estado → URL, **todo ciclo**, dentro de `atualizar()`, ao lado de `sincronizarControles`. |
+
+Depois daquela única leitura, a barra de endereço tem exatamente o mesmo papel
+de um `<select>`: mostra o que o estado diz e nunca decide nada. O que veio da
+URL não fica guardado em lugar nenhum — vira estado como qualquer outro
+critério e perde a origem privilegiada.
+
+### Três decisões que valem explicação
+
+**`replaceState`, não `pushState`.** A busca reage a cada tecla. Com
+`pushState`, digitar "biblioteca" empilharia onze entradas no histórico, e sair
+da página exigiria apertar Voltar onze vezes. A visão atual substitui a
+anterior, e o botão Voltar continua significando "sair desta página".
+
+**Valor do padrão não vai para a URL.** O quadro sem filtro nenhum tem endereço
+limpo, sem `?`. Como consequência, "Limpar filtros" também apaga a consulta da
+barra — o endereço acompanha o botão em vez de guardar o rastro de um filtro
+que já saiu de cena.
+
+**Todo valor que chega da URL é conferido.** `?prioridade=urgente` é texto que
+qualquer pessoa pode digitar, e nenhum `<select>` consegue produzi-lo. Se
+entrasse no estado, o quadro ficaria vazio enquanto o campo mostraria "Todas" —
+porque atribuir a `value` um texto sem `<option>` correspondente faz o
+navegador cair silenciosamente para a primeira opção. Estado e controle
+passariam a contar histórias diferentes. Por isso `estado.js` declara
+`VALORES_VALIDOS`, e o que não estiver no vocabulário é **ignorado**: o
+critério fica no valor inicial e o endereço quebrado abre o quadro inteiro, em
+vez de virar erro ou tela em branco. `busca` é a exceção — texto livre não tem
+vocabulário, e ela só alimenta um `includes`, nunca é interpretada como HTML.
+
+### Por que não há ouvinte de `popstate`
+
+Como a escrita usa `replaceState`, filtrar nunca empilha entradas no
+histórico — então não existe "voltar para o filtro anterior" a ser tratado. As
+outras formas de chegar a um endereço (colar na barra, abrir um favorito,
+clicar num link) recarregam o documento, e aí a leitura da inicialização já dá
+conta. Um ouvinte de `popstate` seria código que nunca dispara.
+
+### Como conferir
+
+1. Filtre, busque e ordene. A barra de endereço acompanha a cada mudança.
+2. Copie o endereço, abra numa janela anônima. O quadro volta igual, com os
+   campos preenchidos.
+3. Clique em "Limpar filtros". A consulta some da barra.
+4. Digite `?prioridade=urgente&status=fazer` à mão. `urgente` é descartado,
+   `fazer` é aplicado — e o `<select>` de status mostra "A fazer".
+5. No Console: `app.estado` continua com as mesmas sete chaves. A URL não
+   acrescentou nenhuma.
 
 ## As cinco telas
 

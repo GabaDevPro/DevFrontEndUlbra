@@ -19,6 +19,7 @@ apenas redireciona para lá, para que a URL curta acima abra o quadro.
 | E2 | Layout responsivo com Grid e Flexbox, sistema de design em CSS e os cartões desenhados por JavaScript. |
 | E3 | Os dados saem do JavaScript e passam a vir de `dados.json` por `fetch`, com os estados de carregando, sucesso, erro e vazio. |
 | E4 | Estado único da aplicação: busca, filtros, ordenação e "Limpar filtros" funcionando, e a aplicação publicada. |
+| E4 — desafio opcional | Os critérios viajam na URL com `URLSearchParams`: o endereço pode ser copiado e reabre a mesma visão. |
 
 A documentação de cada decisão está em
 [`to-do-List/README.md`](to-do-List/README.md).
