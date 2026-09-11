@@ -516,15 +516,89 @@ main section:hover h2 {
   transform: rotate(0deg) scale(1.02);
 }
 
+/* ==========================================================================
+   A trilha de cartões — carrossel no mobile, pilha a partir de 40rem
+   ==========================================================================
+
+   Abaixo de 40rem as quatro pastas ficam uma sobre a outra, e a página virava
+   uma coluna longuíssima: com dez cartões empilhados, chegar da primeira
+   pasta ao rodapé exigia várias telas de rolagem. Aqui cada pasta passa a
+   mostrar um cartão por vez, e os outros ficam ao lado, alcançáveis
+   arrastando na horizontal.
+
+   O CARROSSEL É SÓ CSS, e isso não é economia — é o que o mantém compatível
+   com as regras desta entrega:
+
+     - não há nada para religar depois de `replaceChildren()`. A rolagem é
+       propriedade da trilha, que nunca é substituída, e não dos cartões, que
+       entram e saem a cada desenho;
+     - nenhum ouvinte percorre cartões para mostrar um e esconder os demais —
+       justamente o que o enunciado proíbe. Todos os cartões estão visíveis
+       ao mesmo tempo; o que muda é qual pedaço da trilha está à vista;
+     - todos continuam no documento e na ordem de leitura, então quem usa
+       leitor de tela encontra os dez, não só o que está na área visível;
+     - o Tab continua funcionando sozinho: o botão de cada cartão é um ponto
+       de parada, e o navegador rola a trilha até ele sem que seja preciso
+       escrever uma linha para isso.
+
+   "Arrastar" aqui é o gesto de rolagem nativo do navegador. Não é o
+   drag-and-drop de cartões que a entrega exclui: nenhum cartão muda de
+   coluna, de posição na lista ou de dado. A ordem continua sendo decidida
+   em `derivar.js`, e a trilha apenas a exibe.                               */
+
 main section ul {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--space-3);
   min-width: 0;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+
+  /* O gesto morre na trilha. Sem isto, continuar arrastando depois do último
+     cartão passaria o movimento adiante e a página inteira deslizaria de
+     lado — exatamente a rolagem horizontal que a E2 promete não ter. */
+  overscroll-behavior-x: contain;
+
+  /* `overflow-x` também recorta na vertical: sem esta folga, a sombra dura do
+     cartão e o contorno de foco (3px com 2px de afastamento) seriam cortados
+     rente à borda da área rolável. A margem negativa devolve o alinhamento,
+     deixando os cartões correrem até a borda da pasta. */
+  padding: var(--space-1);
+  margin: calc(var(--space-1) * -1);
+
+  /* O snap precisa conhecer a folga acima, ou pararia sempre meio passo antes
+     do lugar certo. */
+  scroll-padding-inline: var(--space-1);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text-muted) transparent;
+}
+
+/* Pasta vazia: sem cartões não há trilha, e o aviso "Sem registros nesta
+   pasta" volta a ocupar a largura toda em vez de virar um item de linha
+   espremido. */
+main section ul:empty {
+  display: block;
+}
+
+main section ul::-webkit-scrollbar {
+  height: 6px;
+}
+
+main section ul::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
 }
 
 main section li {
   min-width: 0;
+
+  /* Um pouco menos que a largura da trilha, de propósito: a fatia do próximo
+     cartão espiando na borda é o que avisa que há mais ali dentro, sem
+     precisar de seta, bolinha ou texto de instrução. Quantos são, o contador
+     ao lado do título da pasta já diz. */
+  flex: 0 0 87%;
+  scroll-snap-align: start;
 }
 
 .contador {
@@ -880,6 +954,22 @@ main[hidden],
 @media (min-width: 40rem) {
   main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Daqui para cima o carrossel perde a razão de ser: com as pastas lado a
+     lado a página deixa de ser uma fila única, e rolar a tela de cima para
+     baixo é mais simples do que arrastar quatro trilhas separadas. A pilha
+     vertical volta, e com ela a visão de todos os cartões de uma vez. */
+  main section ul {
+    flex-direction: column;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  main section li {
+    flex: 0 1 auto;
   }
 }
 
