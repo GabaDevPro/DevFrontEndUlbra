@@ -10,12 +10,13 @@
      controles.js    escuta a pessoa           (escreve no estado, não desenha)
      estados.js      escolhe a tela            (não sabe filtrar nem buscar)
      renderizacao.js desenha os cartões        (não sabe de onde vem o array)
+     url.js          espelha os critérios      (lê uma vez, depois só escreve)
 
    O CICLO ÚNICO é a função `atualizar()`, aqui embaixo. Todo evento —
    digitar, filtrar, ordenar, limpar, clicar num cartão — termina nela. É por
-   isso que cartões, contagem, mensagens e controles não conseguem discordar:
-   os quatro são escritos na mesma passagem, a partir da mesma leitura do
-   estado e da mesma lista derivada.
+   isso que cartões, contagem, mensagens, controles e endereço não conseguem
+   discordar: os cinco são escritos na mesma passagem, a partir da mesma
+   leitura do estado e da mesma lista derivada.
    ========================================================================== */
 
 import { carregarTarefas } from './api.js';
@@ -23,6 +24,7 @@ import { estado } from './estado.js';
 import { derivarVisiveis } from './derivar.js';
 import { ligarControles, sincronizarControles } from './controles.js';
 import { renderizarEstado } from './estados.js';
+import { criteriosDaURL, sincronizarURL } from './url.js';
 
 /* Troque esta constante para reproduzir os testes do enunciado:
 
@@ -100,6 +102,12 @@ export function atualizar() {
      cartões ao ponto de partida com um único `Object.assign` no estado. */
   sincronizarControles(estado);
 
+  /* E a barra de endereço é a terceira projeção, escrita no mesmo lugar e a
+     partir da mesma leitura. Ficando aqui, e não nos ouvintes, ela não tem
+     como atrasar em relação aos cartões: ou o ciclo inteiro aconteceu, ou
+     nada aconteceu. */
+  sincronizarURL(estado);
+
   devolverFoco(marca);
 }
 
@@ -107,6 +115,19 @@ export function atualizar() {
    Inicialização
    -------------------------------------------------------------------------- */
 async function iniciar() {
+  /* A ÚNICA leitura da URL em toda a vida da página, e ela vem antes de tudo:
+     antes dos ouvintes, antes do primeiro desenho, antes do pedido dos dados.
+
+     O que chega da barra de endereço entra no estado e para por aí — vira
+     estado como qualquer outro critério, sem origem privilegiada nem cópia
+     guardada à parte. Do próximo ciclo em diante a URL só recebe.
+
+     `Object.assign` por cima: o estado já nasce nos valores iniciais, então o
+     que o endereço não trouxer (ou trouxer inválido) fica no padrão. Os campos
+     do formulário aparecem preenchidos sozinhos, porque `atualizar()` os
+     sincroniza a partir deste mesmo estado. */
+  Object.assign(estado, criteriosDaURL());
+
   /* Os ouvintes são instalados uma única vez, antes de qualquer dado chegar.
      Os controles já existem no HTML, e nenhum deles é recriado depois. */
   ligarControles(atualizar);
