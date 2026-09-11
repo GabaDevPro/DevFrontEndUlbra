@@ -76,7 +76,36 @@ function devolverFoco(marca) {
   const alvo = document.querySelector(
     `main [data-id="${marca.id}"] [data-acao="${marca.acao}"]`,
   );
-  alvo?.focus({ preventScroll: true });
+  if (!alvo) return;
+
+  /* `preventScroll` continua impedindo que a página inteira salte. */
+  alvo.focus({ preventScroll: true });
+
+  /* Mas no carrossel do mobile isso não basta. `replaceChildren()` troca os
+     cartões e, junto com eles, some com a posição de rolagem da trilha: ela
+     volta ao primeiro cartão a cada desenho. Se o cartão que recebeu o foco
+     agora é o terceiro da fila, o foco ficaria aceso fora da área visível —
+     o teclado num lugar e o olho em outro.
+
+     Então a trilha é rolada até ele. Só a trilha: mexer em `scrollLeft`
+     de um elemento não toca na rolagem da página, e é por isso que aqui não
+     serve `scrollIntoView()`, que subiria ajustando todos os ancestrais.
+
+     Isto não move o foco — o foco já está onde estava. Move a janela por onde
+     se olha para ele. Fora do carrossel a conta dá zero e nada acontece. */
+  const trilha = alvo.closest('ul');
+  const cartao = alvo.closest('li');
+  if (!trilha || !cartao) return;
+
+  /* A folga interna da trilha entra na conta: sem descontá-la, o cartão
+     pararia meio passo além do ponto em que o snap o deixaria, e o navegador
+     teria de puxá-lo de volta. */
+  const folga = parseFloat(getComputedStyle(trilha).paddingLeft) || 0;
+
+  trilha.scrollLeft +=
+    cartao.getBoundingClientRect().left
+    - trilha.getBoundingClientRect().left
+    - folga;
 }
 
 /* --------------------------------------------------------------------------
