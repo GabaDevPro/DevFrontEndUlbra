@@ -37,6 +37,30 @@ export const CRITERIOS_INICIAIS = Object.freeze({
   ordenacao: 'prazo-asc',
 });
 
+/* O vocabulário de cada critério: exatamente os `value` dos <option> do HTML.
+   Até aqui a aplicação não precisava desta lista, porque o único jeito de
+   escrever nos critérios era pelos próprios controles — e um <select> não
+   consegue produzir um valor que ele não oferece.
+
+   O desafio opcional abre uma segunda porta de entrada: a barra de endereço,
+   onde qualquer pessoa pode digitar `?prioridade=urgente`. Sem conferência,
+   esse valor entraria no estado, o quadro ficaria vazio e o <select> mostraria
+   "Todas" — porque atribuir a `value` um texto sem <option> correspondente faz
+   o navegador cair silenciosamente para a primeira opção. Estado e controle
+   passariam a contar histórias diferentes, que é justamente o que esta entrega
+   existe para impedir.
+
+   `busca` não aparece aqui: texto livre não tem vocabulário a conferir.
+
+   Esta lista e os <option> do `index.html` precisam concordar. São dois
+   lugares porque são duas linguagens; ao acrescentar um status novo, mexa nos
+   dois. */
+export const VALORES_VALIDOS = Object.freeze({
+  status: Object.freeze(['fazer', 'andamento', 'revisao', 'concluida']),
+  prioridade: Object.freeze(['baixa', 'media', 'alta']),
+  ordenacao: Object.freeze(['prazo-asc', 'prazo-desc']),
+});
+
 /** O estado único da aplicação. */
 export const estado = {
   /* Fonte canônica. Depois de carregada, esta lista não é reordenada nem
