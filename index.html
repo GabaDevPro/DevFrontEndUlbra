@@ -6,24 +6,37 @@
     <title>Quadro de Tarefas — Desenvolvimento Front-End</title>
 
     <!-- O GitHub Pages publica a raiz do repositório, e a aplicação vive na
-         pasta `to-do-List/`. Este redirecionamento é o que faz a URL pública
-         curta abrir o quadro, em vez de mostrar uma página vazia.
-         O <meta refresh> funciona sem JavaScript; o link abaixo é a saída
-         para quem tiver o redirecionamento bloqueado. -->
-    <meta http-equiv="refresh" content="0; url=to-do-List/">
+         pasta `to-do-List/`. Esta página é a porta de entrada da URL curta:
+         por dois segundos ela encena um "erro 404" no tema do dossiê (o
+         documento não consta no arquivo público) e só então redireciona
+         para o quadro. A espera é proposital e acontece em toda visita:
+         é a abertura, não um carregamento.
+
+         O redirecionamento é feito pelo script no fim do <body>, com
+         `location.replace`, para que esta tela não fique no histórico: o
+         "voltar" do quadro leva aonde o visitante estava, e não de volta
+         para cá, onde ele seria redirecionado de novo. Sem JavaScript, o
+         <meta refresh> dentro de <noscript> faz o mesmo. O link no fim é a
+         saída para quem tiver os dois bloqueados, ou não quiser esperar:
+         um redirecionamento com prazo é mudança de contexto sem pedido
+         (WCAG 2.2.1), e por isso a tela sempre oferece o caminho manual. -->
+    <noscript>
+        <meta http-equiv="refresh" content="2; url=to-do-List/">
+    </noscript>
     <link rel="canonical" href="to-do-List/">
 
-    <!-- Estilo embutido, e curto: esta página existe por meio segundo, e
-         qualquer arquivo externo aqui seria uma requisição a mais para
-         atrasar o redirecionamento. Por isso também não há fonte remota:
-         Courier já está instalada em qualquer sistema. -->
+    <!-- Estilo embutido, e curto: qualquer arquivo externo aqui seria uma
+         requisição a mais antes de a tela aparecer. Por isso também não há
+         fonte remota: Courier já está instalada em qualquer sistema. -->
     <style>
         :root {
             --mesa: #23211d;
             --papel: #f3f0e7;
             --tinta: #1b1917;
+            --tinta-fraca: #4c473f;
             --tarja: #14120f;
             --carimbo: #b3261e;
+            --carimbo-texto: #97170f;
         }
 
         body {
@@ -40,6 +53,8 @@
         }
 
         main {
+            position: relative;
+            overflow: hidden;
             max-width: 34rem;
             background: var(--papel);
             border: 1px solid #a8977a;
@@ -61,19 +76,83 @@
         .miolo { padding: 1.75rem 1.5rem; }
 
         h1 {
-            margin: 0 0 0.75rem;
-            font-size: clamp(1.5rem, 1.1rem + 2vw, 2.25rem);
-            letter-spacing: 0.06em;
+            margin: 0 0 0.5rem;
+            font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.5rem);
+            letter-spacing: 0.08em;
             text-transform: uppercase;
+            color: var(--carimbo-texto);
         }
 
         p { margin: 0.5rem 0; }
 
-        .controle {
-            color: #4c473f;
+        .controle,
+        .status {
+            color: var(--tinta-fraca);
             font-size: 0.75rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+        }
+
+        /* Placa do perímetro de Groom Lake, como na aplicação: fundo claro,
+           tarja vermelha, caixa alta. */
+        .aviso {
+            margin-top: 0.75rem;
+            padding: 0.35rem 0.6rem;
+            border: 2px solid var(--carimbo);
+            border-left-width: 8px;
+            background: rgba(179, 38, 30, 0.06);
+            color: var(--carimbo-texto);
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        /* Cursor datilográfico piscando enquanto "transfere", igual ao
+           painel de carregando do quadro. */
+        .status { margin-top: 1rem; }
+
+        .status::after {
+            content: " \2588";
+            animation: piscando 1s steps(1, end) infinite;
+        }
+
+        @keyframes piscando {
+            50% { opacity: 0; }
+        }
+
+        /* A barra enche nos mesmos dois segundos do redirecionamento: a
+           espera fica visível como espera, e não como página travada. */
+        .barra {
+            height: 0.5rem;
+            margin-top: 0.5rem;
+            border: 1px solid var(--tarja);
+            background: rgba(20, 18, 15, 0.08);
+        }
+
+        .barra span {
+            display: block;
+            width: 0;
+            height: 100%;
+            background: var(--tarja);
+            animation: transferindo 2s linear forwards;
+        }
+
+        @keyframes transferindo {
+            to { width: 100%; }
+        }
+
+        /* Carimbo de borracha "NÃO CONSTA", em SVG embutido: imagem, e por
+           isso nenhum leitor de tela tem o que anunciar aqui. */
+        .miolo::after {
+            content: "";
+            position: absolute;
+            right: -0.5rem;
+            bottom: 2rem;
+            width: 200px;
+            height: 70px;
+            opacity: 0.55;
+            pointer-events: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='74' viewBox='0 0 230 74'%3E%3Cg transform='rotate(-9 115 37)'%3E%3Crect x='5' y='8' width='220' height='58' fill='none' stroke='%23b3261e' stroke-width='3'/%3E%3Crect x='11' y='14' width='208' height='46' fill='none' stroke='%23b3261e' stroke-width='1.5'/%3E%3Ctext x='115' y='47' fill='%23b3261e' font-family='Courier New,monospace' font-size='23' font-weight='700' letter-spacing='3' text-anchor='middle'%3EN%26%23195;O CONSTA%3C/text%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
         }
 
         a {
@@ -90,7 +169,7 @@
             box-shadow: 3px 3px 0 var(--tarja);
         }
 
-        a:hover { background: #97170f; }
+        a:hover { background: var(--carimbo-texto); }
 
         a:active {
             transform: translate(3px, 3px);
@@ -101,6 +180,16 @@
             outline: 3px solid var(--tarja);
             outline-offset: 2px;
         }
+
+        /* Em tela estreita o carimbo cairia em cima do link. */
+        @media (max-width: 30rem) {
+            .miolo::after { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .status::after { animation: none; }
+            .barra { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -108,12 +197,25 @@
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
 
         <div class="miolo">
-            <h1>Quadro de Tarefas</h1>
-            <p class="controle">Doc. n.º 51-E4 &middot; transferindo para o arquivo&hellip;</p>
-            <p><a href="to-do-List/">Abrir o dossiê</a></p>
+            <p class="controle">Doc. n.º 51-E4 &middot; consulta ao arquivo público</p>
+            <h1>Erro 404</h1>
+            <p>Documento não localizado neste nível de acesso.</p>
+            <p class="aviso">Área restrita &middot; consulta registrada &middot; fotografia proibida</p>
+
+            <p class="status" role="status">Desclassificando e transferindo para o dossiê&hellip;</p>
+            <div class="barra" aria-hidden="true"><span></span></div>
+
+            <p><a href="to-do-List/">Abrir o dossiê agora</a></p>
         </div>
 
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
     </main>
+
+    <script>
+        /* Dois segundos de tela, em toda visita, e então o quadro. O `replace`
+           troca esta entrada do histórico pela do quadro (ver o comentário
+           no <head>). */
+        setTimeout(function () { location.replace('to-do-List/'); }, 2000);
+    </script>
 </body>
 </html>
