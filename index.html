@@ -9,7 +9,8 @@
          pasta `to-do-List/`. Esta página é o posto de controle da URL
          curta: uma tela de "acesso negado" no tema do dossiê, que não abre
          nada sozinha. Só o botão "Hackear" leva ao quadro, depois de encenar
-         uma invasão no terminal âmbar (o mesmo da região de resultados).
+         uma invasão no terminal âmbar (o mesmo da região de resultados) e
+         de uma chuva de código em tela cheia, enquanto o dossiê é extraído.
 
          A mesma página faz o caminho de volta. O botão "Fugir" do quadro
          abre `../#fuga`: com esse fragmento, a tela encena primeiro a
@@ -204,6 +205,47 @@
             50% { opacity: 0; }
         }
 
+        /* Chuva de código: a tela cheia entre a invasão no terminal e o
+           dossiê. Fica em posição fixa, por cima de tudo, para o posto de
+           controle não aparecer por baixo. O <canvas> desenha em pixels, e
+           por isso recebe o tamanho da janela pelo CSS e a resolução real
+           pelo JavaScript. */
+        .chuva {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            background: var(--crt-bg);
+        }
+
+        .chuva canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Legenda no meio da tela, com o andamento da extração. A tarja
+           escura por baixo mantém o texto legível quando um punhado de
+           glifos passa atrás dele. */
+        .chuva-legenda {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            padding: 0.65rem 1.1rem;
+            max-width: min(90vw, 26rem);
+            background: rgba(20, 21, 15, 0.82);
+            box-shadow: inset 0 0 0 1px rgba(255, 176, 0, 0.35);
+            color: var(--crt-texto);
+            font-size: 0.9375rem;
+            letter-spacing: 0.12em;
+            text-align: center;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        .chuva-legenda b { color: #fff3c4; }
+
         @media (max-width: 30rem) {
             /* Em tela estreita o carimbo cairia em cima do botão. */
             #negado::after { display: none; }
@@ -240,6 +282,15 @@
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
     </main>
 
+    <!-- Chuva de código, o intervalo entre a invasão e o dossiê. É
+         decoração: `aria-hidden` mantém os glifos fora do leitor de tela,
+         que acabou de ouvir no terminal o que está acontecendo. Começa
+         escondida, e só o JavaScript a mostra. -->
+    <div id="chuva" class="chuva" hidden aria-hidden="true">
+        <canvas id="chuva-tela"></canvas>
+        <p class="chuva-legenda"><span id="chuva-texto">Extraindo o dossiê 51-E4</span> <b id="chuva-conta">0%</b></p>
+    </div>
+
     <script>
         /* Duas encenações no mesmo terminal, uma linha por vez:
 
@@ -251,6 +302,7 @@
             var titulo = document.getElementById('titulo');
             var negado = document.getElementById('negado');
             var terminal = document.getElementById('terminal');
+            var chuva = document.getElementById('chuva');
 
             var INTERVALO = 400;   /* ms entre uma linha e a próxima */
             var PAUSA_FINAL = 700; /* ms com a última linha na tela antes de seguir */
@@ -293,6 +345,161 @@
                 negado.hidden = false;
             }
 
+            /* A chuva de código: o intervalo entre a invasão no terminal e o
+               dossiê. Uma tela cheia de glifos caindo, desenhada num
+               <canvas> em vez de elementos — são centenas de desenhos por
+               segundo, e cada glifo como elemento custaria recalcular o
+               layout da página inteira a cada quadro.
+
+               O rastro não é guardado em lugar nenhum: a cada quadro a tela
+               leva uma demão quase transparente da cor do fundo, e o que foi
+               desenhado antes vai sumindo sozinho. */
+            function chuvaDeCodigo(aoTerminar) {
+                /* Katakana de meia largura, algarismos e sinais: glifos de
+                   largura parecida, para as colunas ficarem alinhadas. */
+                var GLIFOS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789#%&*+=<>[]{}$@';
+                /* px entre duas colunas, e entre dois glifos. Em tela
+                   estreita o passo encolhe: com 18px sobrariam umas vinte
+                   colunas num celular, e a chuva ficaria rala. */
+                var PASSO = window.innerWidth < 480 ? 14 : 18;
+                var QUADRO = 55;      /* ms entre dois avanços da chuva */
+                var DURACAO = 2600;   /* ms de chuva até chegar a 100% */
+                var PAUSA = 600;      /* ms com a chuva cheia antes do dossiê */
+                var COR_CABECA = '#fff3c4';
+                var COR_RASTRO = '#ffb000';
+
+                /* Quem pediu menos movimento não recebe chuva nenhuma: tela
+                   inteira de glifos caindo é exatamente o tipo de animação
+                   que a preferência `prefers-reduced-motion` dispensa. */
+                if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    aoTerminar();
+                    return;
+                }
+
+                var tela = document.getElementById('chuva-tela');
+                var legenda = document.getElementById('chuva-texto');
+                var contador = document.getElementById('chuva-conta');
+                var contexto = tela.getContext ? tela.getContext('2d') : null;
+
+                /* Sem contexto 2d a chuva simplesmente não acontece, e o
+                   dossiê abre do mesmo jeito. */
+                if (!contexto) {
+                    aoTerminar();
+                    return;
+                }
+
+                chuva.hidden = false;
+
+                var largura = 0;
+                var altura = 0;
+                var colunas = 0;
+                var gotas = [];
+                var comecou = 0;
+                var ultimoQuadro = 0;
+                var mostrado = -1;
+                var pedido = 0;
+
+                function glifo() {
+                    return GLIFOS.charAt(Math.floor(Math.random() * GLIFOS.length));
+                }
+
+                function dimensionar() {
+                    /* Em tela de alta densidade o <canvas> precisa de mais
+                       pixels do que o CSS pede, senão o glifo sai borrado. O
+                       teto de 2 evita desenhar nove vezes a mesma tela num
+                       aparelho de densidade 3. */
+                    var densidade = Math.min(window.devicePixelRatio || 1, 2);
+
+                    largura = tela.clientWidth;
+                    altura = tela.clientHeight;
+                    tela.width = Math.round(largura * densidade);
+                    tela.height = Math.round(altura * densidade);
+
+                    /* Mexer em width/height zera o contexto: escala, fonte,
+                       alinhamento e cor precisam ser ditos de novo. */
+                    contexto.setTransform(densidade, 0, 0, densidade, 0, 0);
+                    contexto.font = PASSO + 'px "Courier New", Courier, monospace';
+                    contexto.textBaseline = 'top';
+                    contexto.fillStyle = '#14150f';
+                    contexto.fillRect(0, 0, largura, altura);
+
+                    var linhas = Math.ceil(altura / PASSO);
+                    var novas = Math.ceil(largura / PASSO);
+                    for (var i = colunas; i < novas; i++) {
+                        /* Cada coluna nova começa numa altura sorteada, do
+                           topo ao rodapé: a chuva já aparece no meio do
+                           caminho, em tela cheia, em vez de todas as colunas
+                           caírem em bloco a partir da primeira linha. */
+                        gotas[i] = Math.floor(Math.random() * (linhas + 20)) - 20;
+                    }
+                    colunas = novas;
+                }
+
+                function desenhar() {
+                    contexto.fillStyle = 'rgba(20, 21, 15, 0.09)';
+                    contexto.fillRect(0, 0, largura, altura);
+
+                    for (var i = 0; i < colunas; i++) {
+                        var x = i * PASSO;
+                        var y = gotas[i] * PASSO;
+
+                        contexto.fillStyle = COR_CABECA;
+                        contexto.fillText(glifo(), x, y);
+
+                        /* O glifo de cima é repintado em âmbar: sem isso o
+                           rastro desbotaria a partir do branco da cabeça, e a
+                           tela perderia a cor do terminal. */
+                        contexto.fillStyle = COR_RASTRO;
+                        contexto.fillText(glifo(), x, y - PASSO);
+
+                        gotas[i]++;
+
+                        /* Coluna que passou do rodapé recomeça — mas não
+                           todas de uma vez: o sorteio espalha os recomeços. */
+                        if (y > altura && Math.random() > 0.975) gotas[i] = 0;
+                    }
+                }
+
+                function terminar() {
+                    window.cancelAnimationFrame(pedido);
+                    window.removeEventListener('resize', dimensionar);
+                    aoTerminar();
+                }
+
+                /* Um único relógio para as duas coisas: o navegador chama
+                   `quadro` a cada atualização de tela, e é dali que saem
+                   tanto o ritmo da chuva quanto a contagem da extração. */
+                function quadro(agora) {
+                    if (!comecou) {
+                        comecou = agora;
+                        ultimoQuadro = agora - QUADRO;
+                    }
+
+                    if (agora - ultimoQuadro >= QUADRO) {
+                        ultimoQuadro = agora;
+                        desenhar();
+                    }
+
+                    var porcento = Math.min(Math.floor((agora - comecou) / DURACAO * 100), 100);
+                    if (porcento !== mostrado) {
+                        mostrado = porcento;
+                        contador.textContent = porcento + '%';
+                        if (porcento === 100) legenda.textContent = 'Dossiê 51-E4 recuperado';
+                    }
+
+                    if (agora - comecou >= DURACAO + PAUSA) {
+                        terminar();
+                        return;
+                    }
+
+                    pedido = window.requestAnimationFrame(quadro);
+                }
+
+                dimensionar();
+                window.addEventListener('resize', dimensionar);
+                pedido = window.requestAnimationFrame(quadro);
+            }
+
             /* A invasão. Clique com modificador (nova aba, nova janela) segue
                o link normal. */
             botao.addEventListener('click', function (evento) {
@@ -310,7 +517,9 @@
                         'quebrando a cifra do arquivo 51-E4… ok',
                         'ACESSO CONCEDIDO. abrindo o dossiê…'
                     ],
-                    aoTerminar: function () { location.replace(botao.href); }
+                    aoTerminar: function () {
+                        chuvaDeCodigo(function () { location.replace(botao.href); });
+                    }
                 });
             });
 

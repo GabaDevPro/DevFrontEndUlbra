@@ -10,7 +10,8 @@ Gabriel Rodrigues Costa Ferreira.
 Publicada pelo GitHub Pages, a partir da branch `main` e da pasta raiz (`/`).
 A aplicação vive em [`to-do-List/`](to-do-List/); o `index.html` da raiz
 é uma tela de "acesso negado" no tema do dossiê: só o botão "Hackear"
-abre o quadro, depois de encenar uma invasão no terminal. No quadro, o
+abre o quadro, depois de encenar uma invasão no terminal e de uma chuva
+de código em tela cheia, enquanto o dossiê é extraído. No quadro, o
 botão "Fugir", fixo no canto inferior direito da tela, faz o caminho de
 volta: a mesma tela encena a destruição das provas e termina de novo no
 posto de controle.
