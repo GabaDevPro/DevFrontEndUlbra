@@ -41,7 +41,7 @@ python -m http.server 5500     # depois abra http://localhost:5500
 | `js/efeitos.js` | Efeitos de ponteiro (a lanterna). **Fora do ciclo de dados**: não importa nada, não é importado por ninguém e só escreve duas propriedades de CSS. |
 | `js/dados.js` | Array antigo da E2. **Aposentado**, não é importado por ninguém. |
 | `testes/` | Arquivos para reproduzir os estados de origem vazia e de erro de formato. |
-| `../index.html` | Página na raiz do repositório: encena por dois segundos um "erro 404" no tema do dossiê e então redireciona para esta pasta no GitHub Pages. |
+| `../index.html` | Página na raiz do repositório: tela de "acesso negado" no tema do dossiê, cujo botão "Hackear" encena uma invasão e então abre esta pasta no GitHub Pages. |
 
 ## O estado único
 
@@ -401,8 +401,8 @@ ouvindo "TOP SECRET // GROOM LAKE // NOFORN" antes do título da página.
 
 Publicado pelo **GitHub Pages**, a partir da branch padrão (`main`) e da pasta
 raiz (`/`). A aplicação vive em `to-do-List/`, e o `index.html` da raiz
-encena por dois segundos um "erro 404" no tema do dossiê e então redireciona
-para lá, de modo que a URL curta abre o quadro:
+é uma tela de "acesso negado" no tema do dossiê, cujo botão "Hackear" encena
+uma invasão e então abre o quadro, de modo que a URL curta leva até ele:
 
 <https://gabadevpro.github.io/DevFrontEndUlbra/>
 

@@ -9,8 +9,8 @@ Gabriel Rodrigues Costa Ferreira.
 
 Publicada pelo GitHub Pages, a partir da branch `main` e da pasta raiz (`/`).
 A aplicação vive em [`to-do-List/`](to-do-List/); o `index.html` da raiz
-encena por dois segundos um "erro 404" no tema do dossiê e só então
-redireciona para lá, para que a URL curta acima abra o quadro.
+é uma tela de "acesso negado" no tema do dossiê: só o botão "Hackear"
+abre o quadro, depois de encenar uma invasão no terminal.
 
 ## Entregas
 

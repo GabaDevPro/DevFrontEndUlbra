@@ -6,23 +6,17 @@
     <title>Quadro de Tarefas — Desenvolvimento Front-End</title>
 
     <!-- O GitHub Pages publica a raiz do repositório, e a aplicação vive na
-         pasta `to-do-List/`. Esta página é a porta de entrada da URL curta:
-         por dois segundos ela encena um "erro 404" no tema do dossiê (o
-         documento não consta no arquivo público) e só então redireciona
-         para o quadro. A espera é proposital e acontece em toda visita:
-         é a abertura, não um carregamento.
+         pasta `to-do-List/`. Esta página é o posto de controle da URL
+         curta: uma tela de "acesso negado" no tema do dossiê, que não abre
+         nada sozinha. Só o botão "Hackear" leva ao quadro, depois de encenar
+         uma invasão de dois segundos no terminal âmbar (o mesmo da região de
+         resultados do quadro).
 
-         O redirecionamento é feito pelo script no fim do <body>, com
-         `location.replace`, para que esta tela não fique no histórico: o
-         "voltar" do quadro leva aonde o visitante estava, e não de volta
-         para cá, onde ele seria redirecionado de novo. Sem JavaScript, o
-         <meta refresh> dentro de <noscript> faz o mesmo. O link no fim é a
-         saída para quem tiver os dois bloqueados, ou não quiser esperar:
-         um redirecionamento com prazo é mudança de contexto sem pedido
-         (WCAG 2.2.1), e por isso a tela sempre oferece o caminho manual. -->
-    <noscript>
-        <meta http-equiv="refresh" content="2; url=to-do-List/">
-    </noscript>
+         O botão é um link para `to-do-List/`: sem JavaScript ele abre o
+         quadro direto, e com JavaScript o clique é interceptado para rodar
+         a encenação antes. Não há redirecionamento automático, e por isso
+         esta tela fica no histórico de propósito: o "voltar" do quadro traz
+         de volta ao posto de controle, como em qualquer página de entrada. -->
     <link rel="canonical" href="to-do-List/">
 
     <!-- Estilo embutido, e curto: qualquer arquivo externo aqui seria uma
@@ -37,7 +31,12 @@
             --tarja: #14120f;
             --carimbo: #b3261e;
             --carimbo-texto: #97170f;
+            --concedido: #1f5c34;
+            --crt-bg: #14150f;
+            --crt-texto: #ffb000;
         }
+
+        [hidden] { display: none !important; }
 
         body {
             margin: 0;
@@ -45,6 +44,7 @@
             display: grid;
             place-items: center;
             padding: 1.5rem;
+            box-sizing: border-box;
             font-family: "Courier New", Courier, monospace;
             font-size: 1.0625rem;
             background-color: var(--mesa);
@@ -53,9 +53,7 @@
         }
 
         main {
-            position: relative;
-            overflow: hidden;
-            max-width: 34rem;
+            width: min(100%, 34rem);
             background: var(--papel);
             border: 1px solid #a8977a;
             box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
@@ -75,26 +73,29 @@
 
         .miolo { padding: 1.75rem 1.5rem; }
 
-        h1 {
+        .controle {
             margin: 0 0 0.5rem;
-            font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.5rem);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--carimbo-texto);
-        }
-
-        p { margin: 0.5rem 0; }
-
-        .controle,
-        .status {
             color: var(--tinta-fraca);
             font-size: 0.75rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
+        h1 {
+            margin: 0 0 0.75rem;
+            font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.5rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--carimbo-texto);
+        }
+
+        h1.invadindo { color: var(--tinta); }
+        h1.concedido { color: var(--concedido); }
+
+        p { margin: 0.5rem 0; }
+
         /* Placa do perímetro de Groom Lake, como na aplicação: fundo claro,
-           tarja vermelha, caixa alta. */
+           tarja vermelha, caixa alta. O texto é o da sinalização real. */
         .aviso {
             margin-top: 0.75rem;
             padding: 0.35rem 0.6rem;
@@ -107,88 +108,106 @@
             text-transform: uppercase;
         }
 
-        /* Cursor datilográfico piscando enquanto "transfere", igual ao
-           painel de carregando do quadro. */
-        .status { margin-top: 1rem; }
+        .ordem {
+            margin-top: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
 
-        .status::after {
+        /* Carimbo de borracha NEGADO, em SVG embutido: imagem, e por isso
+           nenhum leitor de tela tem o que anunciar aqui. Some junto com a
+           tela de acesso negado. */
+        #negado { position: relative; }
+
+        #negado::after {
+            content: "";
+            position: absolute;
+            right: -0.75rem;
+            bottom: -0.25rem;
+            width: 200px;
+            height: 70px;
+            opacity: 0.55;
+            pointer-events: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='74' viewBox='0 0 230 74'%3E%3Cg transform='rotate(-9 115 37)'%3E%3Crect x='5' y='8' width='220' height='58' fill='none' stroke='%23b3261e' stroke-width='3'/%3E%3Crect x='11' y='14' width='208' height='46' fill='none' stroke='%23b3261e' stroke-width='1.5'/%3E%3Ctext x='115' y='47' fill='%23b3261e' font-family='Courier New,monospace' font-size='26' font-weight='700' letter-spacing='4' text-anchor='middle'%3ENEGADO%3C/text%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+        }
+
+        .botao {
+            display: inline-block;
+            margin-top: 1.25rem;
+            padding: 0.6rem 1.4rem;
+            border: 2px solid var(--tarja);
+            background: var(--carimbo);
+            color: #fdfaf2;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 4px 4px 0 var(--tarja);
+            cursor: pointer;
+        }
+
+        .botao:hover { background: var(--carimbo-texto); }
+
+        .botao:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--tarja);
+        }
+
+        .botao:focus-visible {
+            outline: 3px solid var(--tarja);
+            outline-offset: 2px;
+        }
+
+        /* Terminal âmbar da invasão: o mesmo monitor da região de resultados
+           do quadro. A altura mínima cabe as quatro linhas desde o início,
+           para a caixa não crescer a cada linha. */
+        .terminal {
+            margin: 0.75rem 0 0;
+            padding: 1rem 1.1rem;
+            min-height: 8rem;
+            list-style: none;
+            background: var(--crt-bg);
+            color: var(--crt-texto);
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            box-shadow: inset 0 0 0 1px rgba(255, 176, 0, 0.25);
+        }
+
+        .terminal li {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .terminal li::before { content: "> "; }
+
+        .terminal li:last-child::after {
             content: " \2588";
             animation: piscando 1s steps(1, end) infinite;
+        }
+
+        .terminal li.concedido {
+            color: #fff3c4;
+            font-weight: 700;
         }
 
         @keyframes piscando {
             50% { opacity: 0; }
         }
 
-        /* A barra enche nos mesmos dois segundos do redirecionamento: a
-           espera fica visível como espera, e não como página travada. */
-        .barra {
-            height: 0.5rem;
-            margin-top: 0.5rem;
-            border: 1px solid var(--tarja);
-            background: rgba(20, 18, 15, 0.08);
-        }
-
-        .barra span {
-            display: block;
-            width: 0;
-            height: 100%;
-            background: var(--tarja);
-            animation: transferindo 2s linear forwards;
-        }
-
-        @keyframes transferindo {
-            to { width: 100%; }
-        }
-
-        /* Carimbo de borracha "NÃO CONSTA", em SVG embutido: imagem, e por
-           isso nenhum leitor de tela tem o que anunciar aqui. */
-        .miolo::after {
-            content: "";
-            position: absolute;
-            right: -0.5rem;
-            bottom: 2rem;
-            width: 200px;
-            height: 70px;
-            opacity: 0.55;
-            pointer-events: none;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='74' viewBox='0 0 230 74'%3E%3Cg transform='rotate(-9 115 37)'%3E%3Crect x='5' y='8' width='220' height='58' fill='none' stroke='%23b3261e' stroke-width='3'/%3E%3Crect x='11' y='14' width='208' height='46' fill='none' stroke='%23b3261e' stroke-width='1.5'/%3E%3Ctext x='115' y='47' fill='%23b3261e' font-family='Courier New,monospace' font-size='23' font-weight='700' letter-spacing='3' text-anchor='middle'%3EN%26%23195;O CONSTA%3C/text%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.35rem 0.75rem;
-            border: 2px solid var(--tarja);
-            background: var(--carimbo);
-            color: #fdfaf2;
-            font-size: 0.8125rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            text-decoration: none;
-            box-shadow: 3px 3px 0 var(--tarja);
-        }
-
-        a:hover { background: var(--carimbo-texto); }
-
-        a:active {
-            transform: translate(3px, 3px);
-            box-shadow: 0 0 0 var(--tarja);
-        }
-
-        a:focus-visible {
-            outline: 3px solid var(--tarja);
-            outline-offset: 2px;
-        }
-
-        /* Em tela estreita o carimbo cairia em cima do link. */
         @media (max-width: 30rem) {
-            .miolo::after { display: none; }
+            /* Em tela estreita o carimbo cairia em cima do botão. */
+            #negado::after { display: none; }
+
+            .botao {
+                display: block;
+                text-align: center;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .status::after { animation: none; }
-            .barra { display: none; }
+            .terminal li:last-child::after { animation: none; }
         }
     </style>
 </head>
@@ -197,25 +216,72 @@
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
 
         <div class="miolo">
-            <p class="controle">Doc. n.º 51-E4 &middot; consulta ao arquivo público</p>
-            <h1>Erro 404</h1>
-            <p>Documento não localizado neste nível de acesso.</p>
-            <p class="aviso">Área restrita &middot; consulta registrada &middot; fotografia proibida</p>
+            <p class="controle">Posto de controle &middot; Groom Lake &middot; terminal 51-E4</p>
+            <h1 id="titulo">Acesso negado</h1>
 
-            <p class="status" role="status">Desclassificando e transferindo para o dossiê&hellip;</p>
-            <div class="barra" aria-hidden="true"><span></span></div>
+            <div id="negado">
+                <p>Apenas pessoal autorizado. Esta tentativa foi registrada, e a segurança do perímetro já foi notificada.</p>
+                <p class="aviso">Área restrita &middot; uso de força letal autorizado &middot; fotografia proibida (18 U.S.C. 795)</p>
+                <p class="ordem">Afaste-se do terminal.</p>
+                <p><a class="botao" id="hackear" href="to-do-List/">Hackear</a></p>
+            </div>
 
-            <p><a href="to-do-List/">Abrir o dossiê agora</a></p>
+            <ol id="invasao" class="terminal" aria-live="polite" hidden></ol>
         </div>
 
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
     </main>
 
     <script>
-        /* Dois segundos de tela, em toda visita, e então o quadro. O `replace`
-           troca esta entrada do histórico pela do quadro (ver o comentário
-           no <head>). */
-        setTimeout(function () { location.replace('to-do-List/'); }, 2000);
+        /* O clique em "Hackear" esconde a tela de acesso negado, escreve a
+           invasão no terminal, uma linha por vez, e só então abre o quadro.
+           Clique com modificador (nova aba, nova janela) segue o link normal. */
+        (function () {
+            var botao = document.getElementById('hackear');
+            var titulo = document.getElementById('titulo');
+            var negado = document.getElementById('negado');
+            var terminal = document.getElementById('invasao');
+
+            var passos = [
+                'conectando ao terminal de acesso… ok',
+                'contornando o perímetro… ok',
+                'quebrando a cifra do arquivo 51-E4… ok',
+                'ACESSO CONCEDIDO. abrindo o dossiê…'
+            ];
+            var INTERVALO = 400;   /* ms entre uma linha e a próxima */
+            var PAUSA_FINAL = 700; /* ms com "acesso concedido" na tela antes de abrir */
+
+            botao.addEventListener('click', function (evento) {
+                if (evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.altKey || evento.button !== 0) {
+                    return;
+                }
+                evento.preventDefault();
+
+                negado.hidden = true;
+                terminal.hidden = false;
+                titulo.textContent = 'Invadindo o arquivo';
+                titulo.className = 'invadindo';
+
+                passos.forEach(function (texto, indice) {
+                    var ultimo = indice === passos.length - 1;
+
+                    setTimeout(function () {
+                        var linha = document.createElement('li');
+                        linha.textContent = texto;
+                        if (ultimo) {
+                            linha.className = 'concedido';
+                            titulo.textContent = 'Acesso concedido';
+                            titulo.className = 'concedido';
+                        }
+                        terminal.appendChild(linha);
+
+                        if (ultimo) {
+                            setTimeout(function () { location.assign(botao.href); }, PAUSA_FINAL);
+                        }
+                    }, INTERVALO * (indice + 1));
+                });
+            });
+        }());
     </script>
 </body>
 </html>
