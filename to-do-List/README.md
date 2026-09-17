@@ -39,9 +39,10 @@ python -m http.server 5500     # depois abra http://localhost:5500
 | `js/url.js` | **Desafio opcional.** Lê os critérios da barra de endereço (uma vez, na inicialização) e os escreve de volta a cada ciclo. |
 | `js/main.js` | `atualizar()`, o ciclo único, e a inicialização. Único com `try/catch`. |
 | `js/efeitos.js` | Efeitos de ponteiro (a lanterna). **Fora do ciclo de dados**: não importa nada, não é importado por ninguém e só escreve duas propriedades de CSS. |
+| `js/fugir.js` | O botão "Fugir", fixo no canto inferior direito da tela. **Fora do ciclo de dados**, como `efeitos.js`: só troca a navegação do link por `location.replace`. Sem ele, o botão segue como link comum. |
 | `js/dados.js` | Array antigo da E2. **Aposentado**, não é importado por ninguém. |
 | `testes/` | Arquivos para reproduzir os estados de origem vazia e de erro de formato. |
-| `../index.html` | Página na raiz do repositório: tela de "acesso negado" no tema do dossiê, cujo botão "Hackear" encena uma invasão e então abre esta pasta no GitHub Pages. |
+| `../index.html` | Página na raiz do repositório: tela de "acesso negado" no tema do dossiê, cujo botão "Hackear" encena uma invasão e então abre esta pasta no GitHub Pages. Aberta com `#fuga` (é para onde o botão "Fugir" leva), encena antes a destruição das provas. |
 
 ## O estado único
 
@@ -402,7 +403,9 @@ ouvindo "TOP SECRET // GROOM LAKE // NOFORN" antes do título da página.
 Publicado pelo **GitHub Pages**, a partir da branch padrão (`main`) e da pasta
 raiz (`/`). A aplicação vive em `to-do-List/`, e o `index.html` da raiz
 é uma tela de "acesso negado" no tema do dossiê, cujo botão "Hackear" encena
-uma invasão e então abre o quadro, de modo que a URL curta leva até ele:
+uma invasão e então abre o quadro, de modo que a URL curta leva até ele. O
+botão "Fugir", no canto inferior direito do quadro, faz o caminho de volta,
+encenando a destruição das provas:
 
 <https://gabadevpro.github.io/DevFrontEndUlbra/>
 

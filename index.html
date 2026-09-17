@@ -9,14 +9,20 @@
          pasta `to-do-List/`. Esta página é o posto de controle da URL
          curta: uma tela de "acesso negado" no tema do dossiê, que não abre
          nada sozinha. Só o botão "Hackear" leva ao quadro, depois de encenar
-         uma invasão de dois segundos no terminal âmbar (o mesmo da região de
-         resultados do quadro).
+         uma invasão no terminal âmbar (o mesmo da região de resultados).
 
-         O botão é um link para `to-do-List/`: sem JavaScript ele abre o
-         quadro direto, e com JavaScript o clique é interceptado para rodar
-         a encenação antes. Não há redirecionamento automático, e por isso
-         esta tela fica no histórico de propósito: o "voltar" do quadro traz
-         de volta ao posto de controle, como em qualquer página de entrada. -->
+         A mesma página faz o caminho de volta. O botão "Fugir" do quadro
+         abre `../#fuga`: com esse fragmento, a tela encena primeiro a
+         destruição das provas e só então mostra o posto de controle de
+         novo, com o acesso negado. O fragmento é apagado da URL na hora
+         (history.replaceState), para um recarregamento mostrar só o posto.
+
+         O botão "Hackear" é um link para `to-do-List/`: sem JavaScript ele
+         abre o quadro direto, e com JavaScript o clique é interceptado para
+         rodar a encenação antes. A navegação usa `location.replace` nos
+         dois sentidos, e por isso o site ocupa uma única entrada no
+         histórico: o "voltar" do navegador nunca devolve ao arquivo sem
+         passar pelo "Hackear", nem repete a fuga. -->
     <link rel="canonical" href="to-do-List/">
 
     <!-- Estilo embutido, e curto: qualquer arquivo externo aqui seria uma
@@ -89,8 +95,10 @@
             color: var(--carimbo-texto);
         }
 
-        h1.invadindo { color: var(--tinta); }
-        h1.concedido { color: var(--concedido); }
+        /* Durante uma encenação o título fica em tinta comum; ao terminar,
+           no verde da tinta de carimbo de "concluída" do quadro. */
+        h1.andamento { color: var(--tinta); }
+        h1.sucesso { color: var(--concedido); }
 
         p { margin: 0.5rem 0; }
 
@@ -160,9 +168,9 @@
             outline-offset: 2px;
         }
 
-        /* Terminal âmbar da invasão: o mesmo monitor da região de resultados
-           do quadro. A altura mínima cabe as quatro linhas desde o início,
-           para a caixa não crescer a cada linha. */
+        /* Terminal âmbar das encenações: o mesmo monitor da região de
+           resultados do quadro. A altura mínima cabe as quatro linhas desde
+           o início, para a caixa não crescer a cada linha. */
         .terminal {
             margin: 0.75rem 0 0;
             padding: 1rem 1.1rem;
@@ -187,7 +195,7 @@
             animation: piscando 1s steps(1, end) infinite;
         }
 
-        .terminal li.concedido {
+        .terminal li.destaque {
             color: #fff3c4;
             font-weight: 700;
         }
@@ -226,61 +234,103 @@
                 <p><a class="botao" id="hackear" href="to-do-List/">Hackear</a></p>
             </div>
 
-            <ol id="invasao" class="terminal" aria-live="polite" hidden></ol>
+            <ol id="terminal" class="terminal" aria-live="polite" hidden></ol>
         </div>
 
         <p class="faixa" aria-hidden="true">Top secret // Groom Lake // Noforn</p>
     </main>
 
     <script>
-        /* O clique em "Hackear" esconde a tela de acesso negado, escreve a
-           invasão no terminal, uma linha por vez, e só então abre o quadro.
-           Clique com modificador (nova aba, nova janela) segue o link normal. */
+        /* Duas encenações no mesmo terminal, uma linha por vez:
+
+             - a invasão, no clique em "Hackear", que termina abrindo o quadro;
+             - a fuga, quando a página abre com `#fuga` (o botão "Fugir" do
+               quadro), que termina mostrando o posto de controle de novo. */
         (function () {
             var botao = document.getElementById('hackear');
             var titulo = document.getElementById('titulo');
             var negado = document.getElementById('negado');
-            var terminal = document.getElementById('invasao');
+            var terminal = document.getElementById('terminal');
 
-            var passos = [
-                'conectando ao terminal de acesso… ok',
-                'contornando o perímetro… ok',
-                'quebrando a cifra do arquivo 51-E4… ok',
-                'ACESSO CONCEDIDO. abrindo o dossiê…'
-            ];
             var INTERVALO = 400;   /* ms entre uma linha e a próxima */
-            var PAUSA_FINAL = 700; /* ms com "acesso concedido" na tela antes de abrir */
+            var PAUSA_FINAL = 700; /* ms com a última linha na tela antes de seguir */
 
+            /* Esconde o posto de controle, escreve os passos no terminal e,
+               depois da pausa final, chama `aoTerminar`. */
+            function encenar(cena) {
+                negado.hidden = true;
+                terminal.textContent = '';
+                terminal.hidden = false;
+                titulo.textContent = cena.tituloDurante;
+                titulo.className = 'andamento';
+
+                cena.passos.forEach(function (texto, indice) {
+                    var ultimo = indice === cena.passos.length - 1;
+
+                    setTimeout(function () {
+                        var linha = document.createElement('li');
+                        linha.textContent = texto;
+                        if (ultimo) {
+                            linha.className = 'destaque';
+                            titulo.textContent = cena.tituloFinal;
+                            titulo.className = 'sucesso';
+                        }
+                        terminal.appendChild(linha);
+
+                        if (ultimo) {
+                            setTimeout(cena.aoTerminar, PAUSA_FINAL);
+                        }
+                    }, INTERVALO * (indice + 1));
+                });
+            }
+
+            /* Volta ao posto de controle, com o acesso negado de novo. */
+            function mostrarPosto() {
+                terminal.hidden = true;
+                terminal.textContent = '';
+                titulo.textContent = 'Acesso negado';
+                titulo.className = '';
+                negado.hidden = false;
+            }
+
+            /* A invasão. Clique com modificador (nova aba, nova janela) segue
+               o link normal. */
             botao.addEventListener('click', function (evento) {
                 if (evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.altKey || evento.button !== 0) {
                     return;
                 }
                 evento.preventDefault();
 
-                negado.hidden = true;
-                terminal.hidden = false;
-                titulo.textContent = 'Invadindo o arquivo';
-                titulo.className = 'invadindo';
-
-                passos.forEach(function (texto, indice) {
-                    var ultimo = indice === passos.length - 1;
-
-                    setTimeout(function () {
-                        var linha = document.createElement('li');
-                        linha.textContent = texto;
-                        if (ultimo) {
-                            linha.className = 'concedido';
-                            titulo.textContent = 'Acesso concedido';
-                            titulo.className = 'concedido';
-                        }
-                        terminal.appendChild(linha);
-
-                        if (ultimo) {
-                            setTimeout(function () { location.assign(botao.href); }, PAUSA_FINAL);
-                        }
-                    }, INTERVALO * (indice + 1));
+                encenar({
+                    tituloDurante: 'Invadindo o arquivo',
+                    tituloFinal: 'Acesso concedido',
+                    passos: [
+                        'conectando ao terminal de acesso… ok',
+                        'contornando o perímetro… ok',
+                        'quebrando a cifra do arquivo 51-E4… ok',
+                        'ACESSO CONCEDIDO. abrindo o dossiê…'
+                    ],
+                    aoTerminar: function () { location.replace(botao.href); }
                 });
             });
+
+            /* A fuga. O fragmento sai da URL na hora, para um recarregamento
+               mostrar só o posto de controle. */
+            if (location.hash === '#fuga') {
+                history.replaceState(null, '', location.pathname + location.search);
+
+                encenar({
+                    tituloDurante: 'Abandonando o arquivo',
+                    tituloFinal: 'Fuga concluída',
+                    passos: [
+                        'apagando o registro de acesso… ok',
+                        'destruindo as provas… ok',
+                        'queimando as cópias do dossiê 51-E4… ok',
+                        'FUGA CONCLUÍDA. saindo pelo perímetro…'
+                    ],
+                    aoTerminar: mostrarPosto
+                });
+            }
         }());
     </script>
 </body>

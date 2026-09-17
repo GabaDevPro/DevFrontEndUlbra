@@ -122,11 +122,22 @@
         <p class="faixa-classificacao" aria-hidden="true">TOP SECRET // GROOM LAKE // NOFORN</p>
     </footer>
     <br>
+
+    <!-- Saída de emergência: fixa no canto inferior direito da tela, fora do
+         fluxo do documento e fora do ciclo de dados. É um link para a página
+         raiz em modo de fuga, onde a encenação de destruir as provas termina
+         no posto de controle, com o acesso negado de novo. -->
+    <a class="botao-fugir" id="fugir" href="../#fuga">Fugir</a>
+
     <script type="module" src="js/main.js"></script>
 
     <!-- Módulo à parte, de propósito: só apresentação. Não é importado por
          main.js e não participa do ciclo de dados. Se falhar, a aplicação
          continua inteira — apaga-se a lanterna, nada mais. -->
     <script type="module" src="js/efeitos.js"></script>
+
+    <!-- Idem: só troca a navegação do botão "Fugir" por `location.replace`.
+         Sem ele, o botão continua funcionando como link comum. -->
+    <script type="module" src="js/fugir.js"></script>
 </body>
 </html>

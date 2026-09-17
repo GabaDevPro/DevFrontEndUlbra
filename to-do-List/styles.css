@@ -906,6 +906,51 @@ footer .faixa-classificacao {
 }
 
 /* ==========================================================================
+   Saída de emergência — o botão "Fugir"
+   ==========================================================================
+   Fixo no canto inferior direito da tela, encostado nas duas bordas, por
+   cima de tudo (a lanterna fica em z-index 50 e não intercepta cliques).
+   Mesmo carimbo de borracha dos botões do formulário. É apresentação, e só:
+   o link leva à página raiz em modo de fuga, e `js/fugir.js` apenas troca a
+   navegação por `location.replace`.                                       */
+
+.botao-fugir {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  padding: 0.55rem 1.1rem;
+  border: 2px solid var(--color-tarja);
+  border-right: 0;
+  border-bottom: 0;
+  background: var(--sf704);
+  color: #fdfaf2;
+  font-family: var(--font-carimbo);
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: -3px -3px 0 var(--color-tarja);
+  transition: background-color 0.15s ease;
+}
+
+.botao-fugir:hover {
+  background: var(--sf704-texto);
+}
+
+.botao-fugir:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--color-tarja);
+}
+
+/* No canto da tela não há espaço para o anel de foco por fora: ele entra,
+   em papel sobre o vermelho. */
+.botao-fugir:focus-visible {
+  outline: 3px solid #fdfaf2;
+  outline-offset: -6px;
+}
+
+/* ==========================================================================
    Acessibilidade — foco visível
    ==========================================================================
    O anel é âmbar sobre a mesa escura e preto sobre papel, para nunca depender
@@ -993,6 +1038,7 @@ main[hidden],
   article::after,
   main section h2,
   fieldset button,
+  .botao-fugir,
   .acao-cartao,
   article dd:nth-of-type(2),
   article dd:nth-of-type(2)::after {
